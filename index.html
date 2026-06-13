@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>음성중학교 교내 하이록스 대회 참가신청</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #111;
+    --white: #fff;
+    --gray-light: #f5f5f5;
+    --gray-mid: #e0e0e0;
+    --gray-text: #888;
+    --accent: #e8390e;
+    --accent-dark: #b52c08;
+    --accent-light: #fff1ee;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: #f8f8f6;
+    color: var(--black);
+    min-height: 100vh;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--black);
+    color: var(--white);
+    padding: 3.5rem 1.5rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: 'HYROX';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(80px, 20vw, 180px);
+    font-weight: 900;
+    letter-spacing: -4px;
+    color: rgba(255,255,255,0.04);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 1.2rem;
+  }
+  .hero h1 {
+    font-size: clamp(1.8rem, 6vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.15;
+    margin-bottom: 0.6rem;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero-sub {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat .val {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--white);
+  }
+  .hero-stat .lbl {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ── Deadline banner ── */
+  .deadline-bar {
+    background: var(--accent);
+    color: var(--white);
+    text-align: center;
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .deadline-bar .countdown {
+    font-weight: 800;
+    font-size: 1rem;
+    margin-left: 6px;
+  }
+
+  /* ── Layout ── */
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  /* ── Section card ── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-mid);
+    padding: 1.75rem 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .card-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gray-mid);
+  }
+
+  /* ── Form ── */
+  .field { margin-bottom: 1.1rem; }
+  .field label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 0.35rem;
+  }
+  .field label .req { color: var(--accent); margin-left: 2px; }
+  .field input, .field textarea, .field select {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--gray-mid);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: #fafafa;
+    color: var(--black);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .field input:focus, .field textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(232,57,14,0.12);
+    background: var(--white);
+  }
+  .field textarea { resize: vertical; min-height: 80px; }
+  .field .hint {
+    font-size: 0.75rem;
+    color: var(--gray-text);
+    margin-top: 0.3rem;
+  }
+
+  .row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  /* ── Member blocks ── */
+  .member-block {
+    background: var(--gray-light);
+    border-radius: var(--radius-sm);
+    padding: 1.1rem 1rem;
+    margin-bottom: 0.85rem;
+  }
+  .member-block:last-child { margin-bottom: 0; }
+  .member-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 0.85rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ── Submit ── */
+  .submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--accent);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .submit-btn:hover { background: var(--accent-dark); }
+  .submit-btn:active { transform: scale(0.985); }
+  .submit-btn:disabled {
+    background: var(--gray-mid);
+    color: var(--gray-text);
+    cursor: not-allowed;
+  }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 2rem; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--black);
+    color: var(--white);
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 999;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .toast.success { background: #1a7f37; }
+  .toast.error { background: #b91c1c; }
+
+  /* ── Success screen ── */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 4rem 1.5rem;
+  }
+  .success-screen.show { display: block; }
+  .success-icon {
+    width: 72px; height: 72px;
+    background: var(--accent-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+  }
+  .success-screen h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+  .success-screen p {
+    color: var(--gray-text);
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+  .success-team-name {
+    display: inline-block;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 0.4rem 1.2rem;
+    border-radius: 50px;
+    margin: 1rem 0;
+  }
+
+  .form-area { display: block; }
+  .closed-banner {
+    display: none;
+    background: #111;
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    margin-bottom: 1.25rem;
+  }
+  .closed-banner h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.5rem; }
+  .closed-banner p { font-size: 0.9rem; color: rgba(255,255,255,0.5); }
+
+  @media (max-width: 400px) {
+    .row-3 { grid-template-columns: 1fr 1fr; }
+    .row-3 .field:last-child { grid-column: span 2; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge">음성중학교</div>
+  <h1>교내 <span>HYROX</span><br>참가신청</h1>
+  <p class="hero-sub">팀을 구성하고 도전하세요<br>기말고사 종료 후 개최 예정</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="val" id="hero-team-count">0</span>
+      <span class="lbl">팀 신청</span>
+    </div>
+    <div class="hero-stat">
+      <span class="val">2명</span>
+      <span class="lbl">팀 구성</span>
+    </div>
+    <div class="hero-stat">
+      <span class="val" id="hero-dday">-</span>
+      <span class="lbl">마감까지</span>
+    </div>
+  </div>
+</div>
+
+<!-- Deadline bar -->
+<div class="deadline-bar">
+  📅 신청 마감 <strong>2026년 6월 19일 (금)</strong>
+  <span class="countdown" id="countdown-text"></span>
+</div>
+
+<div class="container">
+
+  <!-- 마감 후 안내 -->
+  <div class="closed-banner" id="closed-banner">
+    <h3>⛔ 신청이 마감되었습니다</h3>
+    <p>2026년 6월 19일(금)에 신청이 종료되었습니다.<br>문의사항은 체육선생님께 직접 연락해주세요.</p>
+  </div>
+
+  <!-- 신청 완료 화면 -->
+  <div class="success-screen" id="success-screen">
+    <div class="success-icon">🏅</div>
+    <h2>신청 완료!</h2>
+    <div class="success-team-name" id="success-team-name"></div>
+    <p>팀 신청이 정상적으로 접수되었습니다.<br>대회 일정은 추후 공지될 예정입니다.</p>
+  </div>
+
+  <!-- 신청 폼 -->
+  <div class="form-area" id="form-area">
+
+    <!-- 팀 정보 -->
+    <div class="card">
+      <div class="card-title">팀 정보</div>
+      <div class="field">
+        <label>팀명 <span class="req">*</span></label>
+        <input type="text" id="team_name" placeholder="팀명을 입력하세요" maxlength="20">
+      </div>
+      <div class="field">
+        <label>기부 물품</label>
+        <input type="text" id="donation" placeholder="예: 과자 1박스, 음료수 등 (없으면 비워두세요)">
+        <p class="hint">자율 기부입니다. 없으면 비워두세요.</p>
+      </div>
+      <div class="field">
+        <label>기타 전달사항</label>
+        <textarea id="extra_info" placeholder="선생님께 전달할 내용이 있으면 입력하세요"></textarea>
+      </div>
+    </div>
+
+    <!-- 팀원 1 -->
+    <div class="card">
+      <div class="card-title">팀원 정보</div>
+
+      <div class="member-block">
+        <div class="member-label">팀원 1</div>
+        <div class="field">
+          <label>이름 <span class="req">*</span></label>
+          <input type="text" id="m1_name" placeholder="이름">
+        </div>
+        <div class="row-3">
+          <div class="field">
+            <label>학년 <span class="req">*</span></label>
+            <input type="number" id="m1_grade" placeholder="1" min="1" max="3">
+          </div>
+          <div class="field">
+            <label>반 <span class="req">*</span></label>
+            <input type="number" id="m1_class" placeholder="1" min="1" max="10">
+          </div>
+          <div class="field">
+            <label>번호 <span class="req">*</span></label>
+            <input type="number" id="m1_number" placeholder="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="field">
+          <label>연락처 <span class="req">*</span></label>
+          <input type="tel" id="m1_phone" placeholder="010-0000-0000">
+        </div>
+      </div>
+
+      <div class="member-block">
+        <div class="member-label">팀원 2</div>
+        <div class="field">
+          <label>이름 <span class="req">*</span></label>
+          <input type="text" id="m2_name" placeholder="이름">
+        </div>
+        <div class="row-3">
+          <div class="field">
+            <label>학년 <span class="req">*</span></label>
+            <input type="number" id="m2_grade" placeholder="1" min="1" max="3">
+          </div>
+          <div class="field">
+            <label>반 <span class="req">*</span></label>
+            <input type="number" id="m2_class" placeholder="1" min="1" max="10">
+          </div>
+          <div class="field">
+            <label>번호 <span class="req">*</span></label>
+            <input type="number" id="m2_number" placeholder="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="field">
+          <label>연락처 <span class="req">*</span></label>
+          <input type="tel" id="m2_phone" placeholder="010-0000-0000">
+        </div>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submit-btn" onclick="handleSubmit()">참가 신청하기</button>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  const SUPABASE_URL = 'https://ifxbdzuxyjvuvvztctpq.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_Qaz0sO5UHxkxeoSEE9YbvA_m6PE8l-d';
+  const DEADLINE = new Date('2026-06-19T23:59:59');
+
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    setTimeout(() => { t.className = 'toast'; }, 3500);
+  }
+
+  function updateCountdown() {
+    const now = new Date();
+    const diff = DEADLINE - now;
+    const dday = document.getElementById('hero-dday');
+    const ctxt = document.getElementById('countdown-text');
+
+    if (diff <= 0) {
+      dday.textContent = '마감';
+      ctxt.textContent = '마감';
+      document.getElementById('closed-banner').style.display = 'block';
+      document.getElementById('form-area').style.display = 'none';
+      return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (days > 0) {
+      dday.textContent = 'D-' + days;
+      ctxt.textContent = '(' + days + '일 ' + hours + '시간 ' + mins + '분 남음)';
+    } else {
+      dday.textContent = 'D-DAY';
+      ctxt.textContent = '(' + hours + '시간 ' + mins + '분 남음)';
+    }
+  }
+
+  async function loadTeamCount() {
+    if (SUPABASE_URL === 'YOUR_SUPABASE_URL') return;
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/teams?select=id`, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY
+        }
+      });
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        document.getElementById('hero-team-count').textContent = data.length;
+      }
+    } catch(e) {}
+  }
+
+  function validate() {
+    const required = [
+      { id: 'm1_name', label: '팀원1 이름' },
+      { id: 'm1_grade', label: '팀원1 학년' },
+      { id: 'm1_class', label: '팀원1 반' },
+      { id: 'm1_number', label: '팀원1 번호' },
+      { id: 'm1_phone', label: '팀원1 연락처' },
+      { id: 'm2_name', label: '팀원2 이름' },
+      { id: 'm2_grade', label: '팀원2 학년' },
+      { id: 'm2_class', label: '팀원2 반' },
+      { id: 'm2_number', label: '팀원2 번호' },
+      { id: 'm2_phone', label: '팀원2 연락처' },
+      { id: 'team_name', label: '팀명' },
+    ];
+    for (const f of required) {
+      const el = document.getElementById(f.id);
+      if (!el.value.trim()) {
+        showToast('⚠️ ' + f.label + '을(를) 입력해주세요', 'error');
+        el.focus();
+        return false;
+      }
+    }
+    return true;
+  }
+
+  async function handleSubmit() {
+    if (!validate()) return;
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = '신청 중...';
+
+    const teamName = document.getElementById('team_name').value.trim();
+
+    if (SUPABASE_URL === 'YOUR_SUPABASE_URL') {
+      setTimeout(() => {
+        document.getElementById('form-area').style.display = 'none';
+        document.getElementById('success-team-name').textContent = teamName;
+        document.getElementById('success-screen').classList.add('show');
+      }, 800);
+      return;
+    }
+
+    try {
+      const teamRes = await fetch(`${SUPABASE_URL}/rest/v1/teams`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({
+          team_name: teamName,
+          extra_info: document.getElementById('extra_info').value.trim(),
+          donation: document.getElementById('donation').value.trim()
+        })
+      });
+
+      if (!teamRes.ok) throw new Error('팀 저장 실패');
+      const teamData = await teamRes.json();
+      const teamId = teamData[0].id;
+
+      const members = [
+        {
+          team_id: teamId, member_order: 1,
+          name: document.getElementById('m1_name').value.trim(),
+          grade: parseInt(document.getElementById('m1_grade').value),
+          class: parseInt(document.getElementById('m1_class').value),
+          number: parseInt(document.getElementById('m1_number').value),
+          phone: document.getElementById('m1_phone').value.trim()
+        },
+        {
+          team_id: teamId, member_order: 2,
+          name: document.getElementById('m2_name').value.trim(),
+          grade: parseInt(document.getElementById('m2_grade').value),
+          class: parseInt(document.getElementById('m2_class').value),
+          number: parseInt(document.getElementById('m2_number').value),
+          phone: document.getElementById('m2_phone').value.trim()
+        }
+      ];
+
+      const memRes = await fetch(`${SUPABASE_URL}/rest/v1/members`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY
+        },
+        body: JSON.stringify(members)
+      });
+
+      if (!memRes.ok) throw new Error('팀원 저장 실패');
+
+      document.getElementById('form-area').style.display = 'none';
+      document.getElementById('success-team-name').textContent = teamName;
+      document.getElementById('success-screen').classList.add('show');
+      loadTeamCount();
+
+    } catch(e) {
+      showToast('❌ 오류가 발생했습니다. 다시 시도해주세요.', 'error');
+      btn.disabled = false;
+      btn.textContent = '참가 신청하기';
+    }
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 30000);
+  loadTeamCount();
+</script>
+</body>
+</html>
