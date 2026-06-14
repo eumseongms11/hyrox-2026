@@ -6,101 +6,101 @@
 <title>하이록스 관리자</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --accent: #e8390e; --accent-dark: #b52c08;
-    --black: #111; --white: #fff;
-    --gray-bg: #f6f6f4; --gray-mid: #e0e0e0; --gray-text: #888;
-    --radius: 12px; --radius-sm: 8px;
-  }
-  body { font-family: 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; background: var(--gray-bg); color: var(--black); min-height: 100vh; }
-
-  .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
-  .login-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--gray-mid); padding: 2.5rem 2rem; width: 100%; max-width: 380px; text-align: center; }
-  .login-card h1 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.4rem; }
-  .login-card p { font-size: 0.85rem; color: var(--gray-text); margin-bottom: 1.75rem; }
-  .login-card input { width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--gray-mid); border-radius: var(--radius-sm); font-size: 0.95rem; font-family: inherit; outline: none; margin-bottom: 0.75rem; background: #fafafa; }
-  .login-card input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,57,14,0.12); }
-  .login-btn { width: 100%; padding: 0.8rem; background: var(--black); color: var(--white); border: none; border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 700; font-family: inherit; cursor: pointer; }
-  .login-btn:hover { background: #333; }
-  .login-error { font-size: 0.8rem; color: var(--accent); margin-top: 0.5rem; }
-
-  .admin-wrap { display: none; }
-  .admin-header { background: var(--black); color: var(--white); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
-  .admin-header h1 { font-size: 1rem; font-weight: 700; }
-  .admin-header .meta { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
-  .logout-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: var(--white); font-family: inherit; font-size: 0.8rem; padding: 0.3rem 0.8rem; border-radius: 6px; cursor: pointer; }
-
-  .admin-nav { background: var(--white); border-bottom: 1px solid var(--gray-mid); display: flex; }
-  .nav-tab { padding: 0.85rem 1.25rem; font-size: 0.85rem; font-weight: 700; cursor: pointer; border: none; background: none; font-family: inherit; color: var(--gray-text); border-bottom: 3px solid transparent; transition: all 0.15s; }
-  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-  .nav-tab:hover { color: var(--black); }
-
-  .container { max-width: 960px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
-
-  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
-  .stat-card { background: var(--white); border-radius: var(--radius-sm); border: 1px solid var(--gray-mid); padding: 1rem 1.25rem; }
-  .stat-card .val { font-size: 1.8rem; font-weight: 800; line-height: 1; }
-  .stat-card .val.accent { color: var(--accent); }
-  .stat-card .lbl { font-size: 0.75rem; color: var(--gray-text); margin-top: 4px; }
-
-  .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 1.25rem; align-items: center; }
-  .controls input { flex: 1; min-width: 180px; padding: 0.55rem 0.85rem; border: 1px solid var(--gray-mid); border-radius: var(--radius-sm); font-size: 0.9rem; font-family: inherit; outline: none; }
-  .controls input:focus { border-color: var(--accent); }
-  .btn { padding: 0.55rem 1rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: pointer; border: 1px solid var(--gray-mid); background: var(--white); white-space: nowrap; }
-  .btn:hover { background: var(--gray-bg); }
-  .btn.primary { background: var(--black); color: var(--white); border-color: var(--black); }
-  .btn.primary:hover { background: #333; }
-  .btn.accent { background: var(--accent); color: var(--white); border-color: var(--accent); }
-  .btn.accent:hover { background: var(--accent-dark); }
-  .btn.green { background: #16a34a; color: var(--white); border-color: #16a34a; }
-  .btn.green:hover { background: #15803d; }
-
-  .table-wrap { background: var(--white); border-radius: var(--radius); border: 1px solid var(--gray-mid); overflow: hidden; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-  thead { background: #f9f9f7; }
-  th { padding: 0.75rem 1rem; text-align: left; font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--gray-text); border-bottom: 1px solid var(--gray-mid); }
-  td { padding: 0.85rem 1rem; border-bottom: 1px solid #f3f3f3; vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: #fafafa; }
-  .team-name-cell { font-weight: 700; font-size: 0.95rem; }
-  .members-cell { font-size: 0.82rem; color: #444; line-height: 1.8; }
-  .donation-cell { font-size: 0.82rem; color: var(--gray-text); }
-  .date-cell { font-size: 0.75rem; color: var(--gray-text); white-space: nowrap; }
-  .no-data { text-align: center; padding: 3rem 1rem; color: var(--gray-text); font-size: 0.9rem; }
-  .loading { text-align: center; padding: 2rem; color: var(--gray-text); }
-  .delete-btn { background: none; border: none; cursor: pointer; color: #ccc; font-size: 1rem; padding: 4px; border-radius: 4px; }
-  .delete-btn:hover { color: #b91c1c; background: #fef2f2; }
-
-  /* 종목/상품 관리 */
-  .section-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--gray-mid); padding: 1.5rem; margin-bottom: 1.25rem; }
-  .section-card h3 { font-size: 0.85rem; font-weight: 800; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
-  .section-card h3::after { content: ''; flex: 1; height: 1px; background: var(--gray-mid); }
-  .add-row { display: flex; gap: 8px; margin-bottom: 1rem; }
-  .add-row input { flex: 1; padding: 0.6rem 0.85rem; border: 1px solid var(--gray-mid); border-radius: var(--radius-sm); font-size: 0.9rem; font-family: inherit; outline: none; }
-  .add-row input:focus { border-color: var(--accent); }
-  .item-list { list-style: none; }
-  .item-row { display: flex; align-items: center; gap: 10px; padding: 0.6rem 0; border-bottom: 1px solid var(--gray-light); }
-  .item-row:last-child { border-bottom: none; }
-  .item-row .item-text { flex: 1; font-size: 0.9rem; }
-  .item-row .item-order { font-size: 0.75rem; color: var(--gray-text); width: 28px; text-align: center; background: var(--gray-light); border-radius: 4px; padding: 2px 0; }
-  .del-item-btn { background: none; border: none; cursor: pointer; color: #ccc; font-size: 0.9rem; padding: 3px 6px; border-radius: 4px; font-family: inherit; }
-  .del-item-btn:hover { color: #b91c1c; background: #fef2f2; }
-  .empty-list { text-align: center; padding: 1.5rem; color: var(--gray-text); font-size: 0.85rem; background: var(--gray-bg); border-radius: var(--radius-sm); }
-
-  @media (max-width: 600px) {
-    th:nth-child(4), td:nth-child(4), th:nth-child(5), td:nth-child(5) { display: none; }
-  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{--yellow:#FFE600;--black:#111;--white:#fff;--gray-bg:#f6f6f4;--gray-mid:#e0e0e0;--gray-text:#888;--radius:12px;--radius-sm:8px;}
+  body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(--gray-bg);color:var(--black);min-height:100vh;}
+  .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;background:#0a0a0a;}
+  .login-card{background:#161616;border-radius:var(--radius);border:1px solid #333;padding:2.5rem 2rem;width:100%;max-width:380px;text-align:center;}
+  .login-card h1{font-size:1.3rem;font-weight:800;margin-bottom:0.4rem;color:var(--white);}
+  .login-card .hyrox-logo{font-size:1.8rem;font-weight:900;color:var(--yellow);letter-spacing:-1px;margin-bottom:0.5rem;}
+  .login-card p{font-size:0.85rem;color:#666;margin-bottom:1.75rem;}
+  .login-card input{width:100%;padding:0.7rem 1rem;border:1px solid #333;border-radius:var(--radius-sm);font-size:0.95rem;font-family:inherit;outline:none;margin-bottom:0.75rem;background:#222;color:var(--white);}
+  .login-card input:focus{border-color:var(--yellow);}
+  .login-btn{width:100%;padding:0.8rem;background:var(--yellow);color:var(--black);border:none;border-radius:var(--radius-sm);font-size:0.95rem;font-weight:900;font-family:inherit;cursor:pointer;}
+  .login-btn:hover{background:#ccb800;}
+  .login-error{font-size:0.8rem;color:#f87171;margin-top:0.5rem;}
+  .admin-wrap{display:none;}
+  .admin-header{background:var(--black);color:var(--white);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--yellow);}
+  .admin-header h1{font-size:1rem;font-weight:700;}
+  .admin-header .logo{color:var(--yellow);font-weight:900;margin-right:8px;}
+  .admin-header .meta{font-size:0.8rem;color:rgba(255,255,255,0.5);}
+  .logout-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:var(--white);font-family:inherit;font-size:0.8rem;padding:0.3rem 0.8rem;border-radius:6px;cursor:pointer;}
+  .admin-nav{background:var(--white);border-bottom:1px solid var(--gray-mid);display:flex;}
+  .nav-tab{padding:0.85rem 1.25rem;font-size:0.85rem;font-weight:700;cursor:pointer;border:none;background:none;font-family:inherit;color:var(--gray-text);border-bottom:3px solid transparent;transition:all 0.15s;}
+  .nav-tab.active{color:var(--black);border-bottom-color:var(--yellow);}
+  .container{max-width:960px;margin:0 auto;padding:1.5rem 1.25rem 4rem;}
+  .tab-panel{display:none;}.tab-panel.active{display:block;}
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:1.5rem;}
+  .stat-card{background:var(--white);border-radius:var(--radius-sm);border:1px solid var(--gray-mid);padding:1rem 1.25rem;}
+  .stat-card .val{font-size:1.8rem;font-weight:800;line-height:1;}
+  .stat-card .val.yellow{color:#856404;}
+  .stat-card .val.red{color:#b91c1c;}
+  .stat-card .lbl{font-size:0.75rem;color:var(--gray-text);margin-top:4px;}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1.25rem;align-items:center;}
+  .controls input{flex:1;min-width:180px;padding:0.55rem 0.85rem;border:1px solid var(--gray-mid);border-radius:var(--radius-sm);font-size:0.9rem;font-family:inherit;outline:none;}
+  .controls input:focus{border-color:var(--black);}
+  .btn{padding:0.55rem 1rem;border-radius:var(--radius-sm);font-size:0.85rem;font-weight:600;font-family:inherit;cursor:pointer;border:1px solid var(--gray-mid);background:var(--white);white-space:nowrap;}
+  .btn:hover{background:var(--gray-bg);}
+  .btn.primary{background:var(--black);color:var(--white);border-color:var(--black);}
+  .btn.primary:hover{background:#333;}
+  .btn.yellow{background:var(--yellow);color:var(--black);border-color:var(--yellow);font-weight:700;}
+  .btn.yellow:hover{background:#ccb800;}
+  .btn.green{background:#16a34a;color:var(--white);border-color:#16a34a;}
+  .btn.green:hover{background:#15803d;}
+  .btn.red{background:#b91c1c;color:var(--white);border-color:#b91c1c;}
+  .btn.red:hover{background:#991b1b;}
+  .filter-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;}
+  .filter-tab{padding:0.35rem 0.85rem;border-radius:50px;font-size:0.8rem;font-weight:600;cursor:pointer;border:1px solid var(--gray-mid);background:var(--white);font-family:inherit;transition:all 0.12s;}
+  .filter-tab.active{background:var(--black);color:var(--white);border-color:var(--black);}
+  .filter-tab.dup-active{background:#b91c1c;color:var(--white);border-color:#b91c1c;}
+  .table-wrap{background:var(--white);border-radius:var(--radius);border:1px solid var(--gray-mid);overflow:hidden;}
+  table{width:100%;border-collapse:collapse;font-size:0.875rem;}
+  thead{background:#f9f9f7;}
+  th{padding:0.75rem 1rem;text-align:left;font-size:0.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray-text);border-bottom:1px solid var(--gray-mid);}
+  td{padding:0.85rem 1rem;border-bottom:1px solid #f3f3f3;vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:#fafafa;}
+  tr.dup-row td{background:#fff5f5;}
+  tr.dup-row:hover td{background:#fee2e2;}
+  .dup-badge{display:inline-block;background:#fee2e2;color:#b91c1c;font-size:0.68rem;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:6px;}
+  .team-name-cell{font-weight:700;font-size:0.95rem;}
+  .members-cell{font-size:0.82rem;color:#444;line-height:1.8;}
+  .donation-cell{font-size:0.82rem;color:var(--gray-text);}
+  .date-cell{font-size:0.75rem;color:var(--gray-text);white-space:nowrap;}
+  .no-data{text-align:center;padding:3rem 1rem;color:var(--gray-text);font-size:0.9rem;}
+  .loading{text-align:center;padding:2rem;color:var(--gray-text);}
+  .delete-btn{background:none;border:none;cursor:pointer;color:#ccc;font-size:1rem;padding:4px;border-radius:4px;}
+  .delete-btn:hover{color:#b91c1c;background:#fef2f2;}
+  .section-card{background:var(--white);border-radius:var(--radius);border:1px solid var(--gray-mid);padding:1.5rem;margin-bottom:1.25rem;}
+  .section-card h3{font-size:0.85rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+  .section-card h3::after{content:'';flex:1;height:1px;background:var(--gray-mid);}
+  .add-row{display:flex;gap:8px;margin-bottom:1rem;}
+  .add-row input{flex:1;padding:0.6rem 0.85rem;border:1px solid var(--gray-mid);border-radius:var(--radius-sm);font-size:0.9rem;font-family:inherit;outline:none;}
+  .add-row input:focus{border-color:var(--black);}
+  .item-list{list-style:none;}
+  .item-row{display:flex;align-items:center;gap:8px;padding:0.55rem 0;border-bottom:1px solid #f3f3f3;}
+  .item-row:last-child{border-bottom:none;}
+  .item-order{font-size:0.75rem;color:var(--gray-text);width:26px;text-align:center;background:#f3f3f3;border-radius:4px;padding:2px 0;flex-shrink:0;}
+  .item-text-view{flex:1;font-size:0.9rem;}
+  .item-edit-input{flex:1;padding:0.35rem 0.6rem;border:1px solid var(--black);border-radius:6px;font-size:0.9rem;font-family:inherit;outline:none;display:none;}
+  .icon-btn{background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:4px;font-size:0.85rem;font-family:inherit;color:var(--gray-text);transition:all 0.12s;}
+  .icon-btn:hover{background:#f3f3f3;}
+  .icon-btn.save{color:#16a34a;display:none;}
+  .icon-btn.save:hover{background:#f0fdf4;}
+  .icon-btn.cancel{color:var(--gray-text);display:none;}
+  .icon-btn.up:disabled,.icon-btn.down:disabled{opacity:0.25;pointer-events:none;}
+  .icon-btn.del:hover{color:#b91c1c;background:#fef2f2;}
+  .empty-list{text-align:center;padding:1.5rem;color:var(--gray-text);font-size:0.85rem;background:#f9f9f7;border-radius:var(--radius-sm);}
+  @media(max-width:600px){th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5){display:none;}}
 </style>
 </head>
 <body>
 
 <div class="login-wrap" id="login-wrap">
   <div class="login-card">
-    <h1>🏅 하이록스 관리자</h1>
-    <p>관리자 비밀번호를 입력하세요</p>
+    <div class="hyrox-logo">HYROX</div>
+    <h1>관리자 페이지</h1>
+    <p>2026 음성중학교 교내 HYROX 대회</p>
     <input type="password" id="pw-input" placeholder="비밀번호" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="login-btn" onclick="doLogin()">로그인</button>
     <p class="login-error" id="login-error"></p>
@@ -109,26 +109,24 @@
 
 <div class="admin-wrap" id="admin-wrap">
   <div class="admin-header">
-    <div>
-      <h1>2026 음성중 HYROX 관리자</h1>
-      <div class="meta">마감: 2026.06.19(금)</div>
-    </div>
+    <div><h1><span class="logo">HYROX</span> 관리자 · 음성중학교 2026</h1><div class="meta">신청 마감: 2026.06.19(금)</div></div>
     <button class="logout-btn" onclick="doLogout()">로그아웃</button>
   </div>
-
   <div class="admin-nav">
     <button class="nav-tab active" onclick="switchNav('teams')">📋 참가 명단</button>
-    <button class="nav-tab" onclick="switchNav('info')">🏃 종목 · 상품 관리</button>
+    <button class="nav-tab" onclick="switchNav('dup')">⚠️ 중복 확인</button>
+    <button class="nav-tab" onclick="switchNav('info')">🏃 종목 · 상품</button>
+    <button class="nav-tab" onclick="switchNav('settings')">⚙️ 대회 설정</button>
   </div>
-
   <div class="container">
 
     <!-- 참가 명단 탭 -->
     <div class="tab-panel active" id="panel-teams">
       <div class="stats-grid">
-        <div class="stat-card"><div class="val accent" id="stat-teams">-</div><div class="lbl">신청 팀</div></div>
+        <div class="stat-card"><div class="val yellow" id="stat-teams">-</div><div class="lbl">신청 팀</div></div>
         <div class="stat-card"><div class="val" id="stat-members">-</div><div class="lbl">총 참가자</div></div>
         <div class="stat-card"><div class="val" id="stat-donation">-</div><div class="lbl">기부 팀</div></div>
+        <div class="stat-card"><div class="val red" id="stat-dup">-</div><div class="lbl">중복 의심</div></div>
       </div>
       <div class="controls">
         <input type="text" id="search-input" placeholder="팀명 또는 이름으로 검색..." oninput="renderTable()">
@@ -145,23 +143,72 @@
       </div>
     </div>
 
-    <!-- 종목/상품 관리 탭 -->
+    <!-- 중복 확인 탭 -->
+    <div class="tab-panel" id="panel-dup">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="val red" id="dup-stat-count">-</div><div class="lbl">중복 학생 수</div></div>
+        <div class="stat-card"><div class="val" id="dup-stat-teams">-</div><div class="lbl">중복 관련 팀</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="loading" id="dup-loading">데이터를 불러오는 중...</div>
+        <table id="dup-table" style="display:none">
+          <thead><tr><th>학년·반·번호</th><th>이름</th><th>소속 팀</th><th>신청일시</th><th></th></tr></thead>
+          <tbody id="dup-body"></tbody>
+        </table>
+        <div class="no-data" id="dup-no-data" style="display:none">✅ 중복 신청된 학생이 없습니다.</div>
+      </div>
+    </div>
+
+    <!-- 종목/상품 탭 -->
     <div class="tab-panel" id="panel-info">
       <div class="section-card">
         <h3>🏃 대회 종목</h3>
         <div class="add-row">
-          <input type="text" id="new-event" placeholder="종목명 입력 (예: 1000m 달리기)">
-          <button class="btn accent" onclick="addItem('event')">+ 추가</button>
+          <input type="text" id="new-event" placeholder="종목명 입력 (예: 1000m 달리기)" onkeydown="if(event.key==='Enter')addItem('event')">
+          <button class="btn yellow" onclick="addItem('event')">+ 추가</button>
         </div>
         <ul class="item-list" id="event-list"><li class="empty-list">등록된 종목이 없습니다</li></ul>
       </div>
       <div class="section-card">
         <h3>🏆 시상 내역</h3>
         <div class="add-row">
-          <input type="text" id="new-prize" placeholder="상품명 입력 (예: 1위 - 치킨 상품권)">
-          <button class="btn accent" onclick="addItem('prize')">+ 추가</button>
+          <input type="text" id="new-prize" placeholder="상품명 입력 (예: 1위 - 치킨 상품권)" onkeydown="if(event.key==='Enter')addItem('prize')">
+          <button class="btn yellow" onclick="addItem('prize')">+ 추가</button>
         </div>
         <ul class="item-list" id="prize-list"><li class="empty-list">등록된 상품이 없습니다</li></ul>
+      </div>
+    </div>
+
+    <!-- 대회 설정 탭 -->
+    <div class="tab-panel" id="panel-settings">
+      <div class="section-card">
+        <h3>📦 기부물품 제출 안내 설정</h3>
+        <p style="font-size:0.82rem;color:var(--gray-text);margin-bottom:1.25rem;">설정하면 참가신청 페이지의 기부물품 입력칸 아래에 실시간으로 표시됩니다.</p>
+        <div style="display:grid;gap:1rem;">
+          <div class="field">
+            <label style="font-size:0.82rem;font-weight:600;color:#444;display:block;margin-bottom:0.35rem;">📅 제출 날짜</label>
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="setting-donation-date" placeholder="예: 2026년 6월 18일 (목)" style="flex:1;padding:0.65rem 0.85rem;border:1px solid var(--gray-mid);border-radius:var(--radius-sm);font-size:0.95rem;font-family:inherit;outline:none;background:#fafafa;">
+              <button class="btn primary" onclick="saveSetting('donation_date')">저장</button>
+            </div>
+            <p style="font-size:0.75rem;color:var(--gray-text);margin-top:0.3rem;" id="setting-donation-date-status"></p>
+          </div>
+          <div class="field">
+            <label style="font-size:0.82rem;font-weight:600;color:#444;display:block;margin-bottom:0.35rem;">📍 제출 장소</label>
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="setting-donation-place" placeholder="예: 체육관 앞 / 3학년 복도" style="flex:1;padding:0.65rem 0.85rem;border:1px solid var(--gray-mid);border-radius:var(--radius-sm);font-size:0.95rem;font-family:inherit;outline:none;background:#fafafa;">
+              <button class="btn primary" onclick="saveSetting('donation_place')">저장</button>
+            </div>
+            <p style="font-size:0.75rem;color:var(--gray-text);margin-top:0.3rem;" id="setting-donation-place-status"></p>
+          </div>
+        </div>
+        <div style="margin-top:1.25rem;background:#f9f9f7;border-radius:var(--radius-sm);padding:1rem 1.25rem;border:1px solid var(--gray-mid);">
+          <p style="font-size:0.78rem;font-weight:700;color:#444;margin-bottom:0.5rem;">미리보기</p>
+          <div style="background:#fff9e6;border:1px solid #FFE600;border-radius:6px;padding:0.6rem 0.85rem;font-size:0.82rem;color:#555;line-height:1.6;" id="settings-preview">
+            <span style="font-weight:700;color:#856404;">📦 기부물품 제출 안내</span><br>
+            <span id="preview-date"></span><span id="preview-place"></span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -169,217 +216,277 @@
 </div>
 
 <script>
-  const SUPABASE_URL = 'https://ifxbdzuxyjvuvvztctpq.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_Qaz0sO5UHxkxeoSEE9YbvA_m6PE8l-d';
-  const ADMIN_PASSWORD = 'hyrox2026';
-  const headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
+const SUPABASE_URL='https://ifxbdzuxyjvuvvztctpq.supabase.co';
+const SUPABASE_KEY='sb_publishable_Qaz0sO5UHxkxeoSEE9YbvA_m6PE8l-d';
+const ADMIN_PASSWORD='hyrox2026';
+const H={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY};
+let allTeams=[],infoItems=[],dupList=[];
 
-  let allTeams = [];
-  let infoItems = [];
+function doLogin(){
+  if(document.getElementById('pw-input').value===ADMIN_PASSWORD){
+    document.getElementById('login-wrap').style.display='none';
+    document.getElementById('admin-wrap').style.display='block';
+    loadData();loadInfoItems();loadSettings();
+  }else{document.getElementById('login-error').textContent='비밀번호가 틀렸습니다.';}
+}
+function doLogout(){
+  document.getElementById('login-wrap').style.display='flex';
+  document.getElementById('admin-wrap').style.display='none';
+  document.getElementById('pw-input').value='';
+}
+function switchNav(tab){
+  document.querySelectorAll('.nav-tab').forEach((t,i)=>t.classList.toggle('active',(['teams','dup','info','settings'][i])===tab));
+  ['teams','dup','info','settings'].forEach(t=>document.getElementById('panel-'+t).classList.toggle('active',t===tab));
+  if(tab==='dup')renderDupTable();
+}
 
-  function doLogin() {
-    if (document.getElementById('pw-input').value === ADMIN_PASSWORD) {
-      document.getElementById('login-wrap').style.display = 'none';
-      document.getElementById('admin-wrap').style.display = 'block';
-      loadData(); loadInfoItems();
-    } else {
-      document.getElementById('login-error').textContent = '비밀번호가 틀렸습니다.';
-    }
-  }
-  function doLogout() {
-    document.getElementById('login-wrap').style.display = 'flex';
-    document.getElementById('admin-wrap').style.display = 'none';
-    document.getElementById('pw-input').value = '';
-  }
-  function switchNav(tab) {
-    document.querySelectorAll('.nav-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='teams')||(i===1&&tab==='info')));
-    document.getElementById('panel-teams').classList.toggle('active', tab==='teams');
-    document.getElementById('panel-info').classList.toggle('active', tab==='info');
-  }
+async function loadData(){
+  document.getElementById('loading').style.display='block';
+  document.getElementById('data-table').style.display='none';
+  document.getElementById('no-data').style.display='none';
+  try{
+    const [tr,mr]=await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/teams?select=*&order=created_at.asc`,{headers:H}),
+      fetch(`${SUPABASE_URL}/rest/v1/members?select=*&order=member_order.asc`,{headers:H})
+    ]);
+    const teams=await tr.json(),members=await mr.json();
+    allTeams=teams.map(t=>({...t,members:members.filter(m=>m.team_id===t.id)}));
+    // 중복 감지
+    const keyMap={};
+    members.forEach(m=>{
+      const key=`${m.grade}-${m.class}-${m.number}`;
+      if(!keyMap[key])keyMap[key]=[];
+      keyMap[key].push(m);
+    });
+    dupList=Object.values(keyMap).filter(arr=>arr.length>1).flat();
+    updateStats();renderTable();
+  }catch(e){document.getElementById('loading').textContent='로딩 실패. 새로고침 버튼을 눌러주세요.';}
+}
 
-  async function loadData() {
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('data-table').style.display = 'none';
-    document.getElementById('no-data').style.display = 'none';
-    try {
-      const [teamsRes, membersRes] = await Promise.all([
-        fetch(`${SUPABASE_URL}/rest/v1/teams?select=*&order=created_at.asc`, { headers }),
-        fetch(`${SUPABASE_URL}/rest/v1/members?select=*&order=member_order.asc`, { headers })
-      ]);
-      const teams = await teamsRes.json();
-      const members = await membersRes.json();
-      allTeams = teams.map(t => ({ ...t, members: members.filter(m => m.team_id === t.id) }));
-      updateStats(); renderTable();
-    } catch(e) { document.getElementById('loading').textContent = '로딩 실패. 새로고침 버튼을 눌러주세요.'; }
-  }
+function updateStats(){
+  document.getElementById('stat-teams').textContent=allTeams.length;
+  document.getElementById('stat-members').textContent=allTeams.reduce((s,t)=>s+t.members.length,0);
+  document.getElementById('stat-donation').textContent=allTeams.filter(t=>t.donation&&t.donation.trim()).length;
+  const dupStudents=new Set(dupList.map(m=>`${m.grade}-${m.class}-${m.number}`)).size;
+  document.getElementById('stat-dup').textContent=dupStudents||0;
+}
 
-  function updateStats() {
-    document.getElementById('stat-teams').textContent = allTeams.length;
-    document.getElementById('stat-members').textContent = allTeams.reduce((s,t) => s + t.members.length, 0);
-    document.getElementById('stat-donation').textContent = allTeams.filter(t => t.donation && t.donation.trim()).length;
-  }
+function isDupMember(m){return dupList.some(d=>d.grade===m.grade&&d.class===m.class&&d.number===m.number);}
 
-  function renderTable() {
-    const q = document.getElementById('search-input').value.toLowerCase().trim();
-    const filtered = q ? allTeams.filter(t => t.team_name.toLowerCase().includes(q) || t.members.some(m => m.name.toLowerCase().includes(q))) : allTeams;
-    document.getElementById('loading').style.display = 'none';
-    if (filtered.length === 0) {
-      document.getElementById('data-table').style.display = 'none';
-      document.getElementById('no-data').style.display = 'block'; return;
-    }
-    document.getElementById('data-table').style.display = 'table';
-    document.getElementById('no-data').style.display = 'none';
-    const tbody = document.getElementById('table-body');
-    tbody.innerHTML = filtered.map((team, idx) => {
-      const memberLines = team.members.sort((a,b) => a.member_order - b.member_order)
-        .map(m => `${m.grade}학년 ${m.class}반 ${m.number}번 <strong>${m.name}</strong> (${m.phone})`).join('<br>');
-      const d = new Date(team.created_at);
-      const ds = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-      return `<tr>
-        <td style="color:var(--gray-text);font-size:0.8rem">${idx+1}</td>
-        <td class="team-name-cell">${team.team_name}</td>
-        <td class="members-cell">${memberLines}</td>
-        <td class="donation-cell">${team.donation||'-'}</td>
-        <td class="date-cell">${ds}</td>
-        <td><button class="delete-btn" onclick="deleteTeam(${team.id},'${team.team_name.replace(/'/g,"\\'")}')">✕</button></td>
-      </tr>`;
+function renderTable(){
+  const q=document.getElementById('search-input').value.toLowerCase().trim();
+  const filtered=q?allTeams.filter(t=>t.team_name.toLowerCase().includes(q)||t.members.some(m=>m.name.toLowerCase().includes(q))):allTeams;
+  document.getElementById('loading').style.display='none';
+  if(filtered.length===0){document.getElementById('data-table').style.display='none';document.getElementById('no-data').style.display='block';return;}
+  document.getElementById('data-table').style.display='table';document.getElementById('no-data').style.display='none';
+  const teamDupIds=new Set(dupList.map(m=>m.team_id));
+  document.getElementById('table-body').innerHTML=filtered.map((team,idx)=>{
+    const hasDup=teamDupIds.has(team.id);
+    const ml=team.members.sort((a,b)=>a.member_order-b.member_order).map(m=>{
+      const dup=isDupMember(m)?'<span class="dup-badge">중복</span>':'';
+      return `${m.grade}학년 ${m.class}반 ${m.number}번 <strong>${m.name}</strong> (${m.phone})${dup}`;
+    }).join('<br>');
+    const d=new Date(team.created_at);
+    const ds=`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    return `<tr${hasDup?' class="dup-row"':''}><td style="color:var(--gray-text);font-size:0.8rem">${idx+1}</td><td class="team-name-cell">${team.team_name}${hasDup?'<span class="dup-badge">중복포함</span>':''}</td><td class="members-cell">${ml}</td><td class="donation-cell">${team.donation||'-'}</td><td class="date-cell">${ds}</td><td><button class="delete-btn" onclick="deleteTeam(${team.id},'${team.team_name.replace(/'/g,"\\'")}')">✕</button></td></tr>`;
+  }).join('');
+}
+
+function renderDupTable(){
+  const dl=document.getElementById('dup-loading'),dt=document.getElementById('dup-table'),dn=document.getElementById('dup-no-data');
+  dl.style.display='none';
+  if(dupList.length===0){dt.style.display='none';dn.style.display='block';document.getElementById('dup-stat-count').textContent=0;document.getElementById('dup-stat-teams').textContent=0;return;}
+  const keyMap={};
+  dupList.forEach(m=>{const key=`${m.grade}-${m.class}-${m.number}`;if(!keyMap[key])keyMap[key]=[];keyMap[key].push(m);});
+  const dupStudents=Object.values(keyMap);
+  document.getElementById('dup-stat-count').textContent=dupStudents.length;
+  const dupTeamIds=new Set(dupList.map(m=>m.team_id));
+  document.getElementById('dup-stat-teams').textContent=dupTeamIds.size;
+  dt.style.display='table';dn.style.display='none';
+  document.getElementById('dup-body').innerHTML=dupStudents.map(group=>{
+    return group.map((m,i)=>{
+      const team=allTeams.find(t=>t.id===m.team_id);
+      const d=new Date(team?team.created_at:new Date());
+      const ds=`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      return `<tr style="background:${i===0?'#fff5f5':'#fef2f2'}"><td style="font-weight:700;color:#b91c1c">${m.grade}학년 ${m.class}반 ${m.number}번</td><td>${m.name}</td><td>${team?team.team_name:'-'}</td><td style="font-size:0.75rem;color:var(--gray-text)">${ds}</td><td><button class="delete-btn" onclick="deleteTeam(${m.team_id},'${(team?team.team_name:'').replace(/'/g,"\\'")}')">팀삭제</button></td></tr>`;
     }).join('');
-  }
+  }).join('<tr><td colspan="5" style="padding:4px;background:var(--gray-mid)"></td></tr>');
+}
 
-  async function deleteTeam(teamId, teamName) {
-    if (!confirm(`"${teamName}" 팀을 삭제하시겠습니까?`)) return;
-    try {
-      await fetch(`${SUPABASE_URL}/rest/v1/members?team_id=eq.${teamId}`, { method: 'DELETE', headers });
-      await fetch(`${SUPABASE_URL}/rest/v1/teams?id=eq.${teamId}`, { method: 'DELETE', headers });
-      allTeams = allTeams.filter(t => t.id !== teamId);
-      updateStats(); renderTable();
-    } catch(e) { alert('삭제 실패.'); }
-  }
+async function deleteTeam(id,name){
+  if(!confirm(`"${name}" 팀을 삭제하시겠습니까?`))return;
+  try{
+    await fetch(`${SUPABASE_URL}/rest/v1/members?team_id=eq.${id}`,{method:'DELETE',headers:H});
+    await fetch(`${SUPABASE_URL}/rest/v1/teams?id=eq.${id}`,{method:'DELETE',headers:H});
+    allTeams=allTeams.filter(t=>t.id!==id);
+    dupList=dupList.filter(m=>m.team_id!==id);
+    updateStats();renderTable();renderDupTable();
+  }catch(e){alert('삭제 실패.');}
+}
 
-  function exportExcel() {
-    if (allTeams.length === 0) { alert('데이터가 없습니다.'); return; }
-    const wb = XLSX.utils.book_new();
-
-    // 시트1: 팀별 명단 (팀 구분선 포함)
-    const ws1Data = [];
-    const merges = [];
-    const teamColors = [];
-    let row = 0;
-
-    // 헤더
-    ws1Data.push(['팀번호','팀명','팀원','이름','학년','반','번호','연락처','기부물품','기타전달','신청일시']);
-    row++;
-
-    allTeams.forEach((team, tidx) => {
-      const startRow = row;
-      team.members.sort((a,b) => a.member_order - b.member_order).forEach((m, mi) => {
-        ws1Data.push([
-          tidx+1,
-          mi === 0 ? team.team_name : '',
-          `팀원${m.member_order}`,
-          m.name, m.grade, m.class, m.number, m.phone,
-          mi === 0 ? (team.donation||'') : '',
-          mi === 0 ? (team.extra_info||'') : '',
-          mi === 0 ? new Date(team.created_at).toLocaleString('ko-KR') : ''
-        ]);
-        row++;
-      });
-      // 팀명 셀 병합
-      if (team.members.length > 1) {
-        merges.push({ s: {r: startRow, c: 1}, e: {r: startRow + team.members.length - 1, c: 1} });
-        merges.push({ s: {r: startRow, c: 0}, e: {r: startRow + team.members.length - 1, c: 0} });
-        merges.push({ s: {r: startRow, c: 8}, e: {r: startRow + team.members.length - 1, c: 8} });
-        merges.push({ s: {r: startRow, c: 9}, e: {r: startRow + team.members.length - 1, c: 9} });
-        merges.push({ s: {r: startRow, c: 10}, e: {r: startRow + team.members.length - 1, c: 10} });
-      }
+function exportExcel(){
+  if(allTeams.length===0){alert('데이터가 없습니다.');return;}
+  const wb=XLSX.utils.book_new();
+  // 시트1: 팀별 병합
+  const ws1=[['팀번호','팀명','팀원','이름','학년','반','번호','연락처','기부물품','기타전달','신청일시','중복여부']];
+  const merges=[];let row=1;
+  allTeams.forEach((team,tidx)=>{
+    const sr=row;
+    team.members.sort((a,b)=>a.member_order-b.member_order).forEach((m,mi)=>{
+      ws1.push([tidx+1,mi===0?team.team_name:'',`팀원${m.member_order}`,m.name,m.grade,m.class,m.number,m.phone,mi===0?(team.donation||''):'',mi===0?(team.extra_info||''):'',mi===0?new Date(team.created_at).toLocaleString('ko-KR'):'',isDupMember(m)?'⚠️중복':'']);
+      row++;
     });
+    if(team.members.length>1){[[0,0],[1,1],[8,8],[9,9],[10,10]].forEach(([c1,c2])=>merges.push({s:{r:sr,c:c1},e:{r:sr+team.members.length-1,c:c2}}));}
+  });
+  const s1=XLSX.utils.aoa_to_sheet(ws1);s1['!merges']=merges;
+  s1['!cols']=[{wch:6},{wch:14},{wch:8},{wch:10},{wch:6},{wch:5},{wch:5},{wch:14},{wch:16},{wch:18},{wch:18},{wch:8}];
+  XLSX.utils.book_append_sheet(wb,s1,'팀별 참가명단');
+  // 시트2: 전체
+  const ws2=[['번호','팀명','팀원','이름','학년','반','번호','연락처','기부물품','기타','신청일시']];
+  allTeams.forEach((t,i)=>t.members.forEach(m=>ws2.push([i+1,t.team_name,`팀원${m.member_order}`,m.name,m.grade,m.class,m.number,m.phone,t.donation||'',t.extra_info||'',new Date(t.created_at).toLocaleString('ko-KR')])));
+  const s2=XLSX.utils.aoa_to_sheet(ws2);s2['!cols']=[{wch:6},{wch:14},{wch:8},{wch:10},{wch:6},{wch:5},{wch:5},{wch:14},{wch:16},{wch:18},{wch:18}];
+  XLSX.utils.book_append_sheet(wb,s2,'전체 명단');
+  // 시트3: 중복
+  if(dupList.length>0){
+    const ws3=[['학년','반','번호','이름','소속팀','신청일시']];
+    dupList.forEach(m=>{const t=allTeams.find(x=>x.id===m.team_id);ws3.push([m.grade,m.class,m.number,m.name,t?t.team_name:'-',t?new Date(t.created_at).toLocaleString('ko-KR'):'-']);});
+    const s3=XLSX.utils.aoa_to_sheet(ws3);s3['!cols']=[{wch:6},{wch:5},{wch:5},{wch:10},{wch:14},{wch:18}];
+    XLSX.utils.book_append_sheet(wb,s3,'⚠️중복명단');
+  }
+  // 시트4: 기부물품
+  const ws4=[['팀명','기부물품']];
+  allTeams.filter(t=>t.donation&&t.donation.trim()).forEach(t=>ws4.push([t.team_name,t.donation]));
+  const s4=XLSX.utils.aoa_to_sheet(ws4);s4['!cols']=[{wch:14},{wch:24}];
+  XLSX.utils.book_append_sheet(wb,s4,'기부물품');
+  XLSX.writeFile(wb,`하이록스_참가명단_${new Date().toLocaleDateString('ko-KR').replace(/\. /g,'-').replace(/\.$/,'')}.xlsx`);
+}
 
-    const ws1 = XLSX.utils.aoa_to_sheet(ws1Data);
-    ws1['!merges'] = merges;
-    ws1['!cols'] = [
-      {wch:6},{wch:14},{wch:8},{wch:10},{wch:6},{wch:5},{wch:5},
-      {wch:14},{wch:16},{wch:18},{wch:18}
-    ];
-    XLSX.utils.book_append_sheet(wb, ws1, '팀별 참가명단');
+// 종목/상품
+async function loadInfoItems(){
+  try{const res=await fetch(`${SUPABASE_URL}/rest/v1/info_items?select=*&order=sort_order.asc`,{headers:H});const data=await res.json();infoItems=Array.isArray(data)?data:[];renderInfoLists();}catch(e){infoItems=[];renderInfoLists();}
+}
+function renderInfoLists(){
+  ['event','prize'].forEach(cat=>{
+    const items=infoItems.filter(i=>i.category===cat);
+    const ul=document.getElementById(cat==='event'?'event-list':'prize-list');
+    if(items.length===0){ul.innerHTML=`<li class="empty-list">등록된 ${cat==='event'?'종목':'상품'}이 없습니다</li>`;return;}
+    ul.innerHTML=items.map((item,idx)=>`
+      <li class="item-row" data-id="${item.id}">
+        <span class="item-order">${idx+1}</span>
+        <span class="item-text-view">${item.content}</span>
+        <input class="item-edit-input" value="${item.content.replace(/"/g,'&quot;')}">
+        <button class="icon-btn edit" onclick="startEdit(${item.id})" title="수정">✏️</button>
+        <button class="icon-btn save" onclick="saveEdit(${item.id})" title="저장">✅</button>
+        <button class="icon-btn cancel" onclick="cancelEdit(${item.id})" title="취소">❌</button>
+        <button class="icon-btn up" onclick="moveItem(${item.id},'${cat}',-1)" ${idx===0?'disabled':''}>⬆️</button>
+        <button class="icon-btn down" onclick="moveItem(${item.id},'${cat}',1)" ${idx===items.length-1?'disabled':''}>⬇️</button>
+        <button class="icon-btn del" onclick="deleteItem(${item.id})">🗑️</button>
+      </li>`).join('');
+  });
+}
+function startEdit(id){
+  const row=document.querySelector(`.item-row[data-id="${id}"]`);
+  row.querySelector('.item-text-view').style.display='none';
+  row.querySelector('.item-edit-input').style.display='block';
+  row.querySelector('.icon-btn.edit').style.display='none';
+  row.querySelector('.icon-btn.save').style.display='inline';
+  row.querySelector('.icon-btn.cancel').style.display='inline';
+  row.querySelector('.item-edit-input').focus();
+}
+function cancelEdit(id){
+  const row=document.querySelector(`.item-row[data-id="${id}"]`);
+  const orig=infoItems.find(i=>i.id===id);
+  row.querySelector('.item-edit-input').value=orig?orig.content:'';
+  row.querySelector('.item-text-view').style.display='';
+  row.querySelector('.item-edit-input').style.display='none';
+  row.querySelector('.icon-btn.edit').style.display='';
+  row.querySelector('.icon-btn.save').style.display='none';
+  row.querySelector('.icon-btn.cancel').style.display='none';
+}
+async function saveEdit(id){
+  const row=document.querySelector(`.item-row[data-id="${id}"]`);
+  const val=row.querySelector('.item-edit-input').value.trim();
+  if(!val){alert('내용을 입력해주세요.');return;}
+  try{
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/info_items?id=eq.${id}`,{method:'PATCH',headers:{...H,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify({content:val})});
+    if(!res.ok)throw new Error();
+    const idx=infoItems.findIndex(i=>i.id===id);if(idx>-1)infoItems[idx].content=val;
+    renderInfoLists();
+  }catch(e){alert('수정 실패.');}
+}
+async function moveItem(id,cat,dir){
+  const items=infoItems.filter(i=>i.category===cat);
+  const idx=items.findIndex(i=>i.id===id);const swapIdx=idx+dir;
+  if(swapIdx<0||swapIdx>=items.length)return;
+  const a=items[idx],b=items[swapIdx],tmp=a.sort_order;
+  try{
+    await Promise.all([fetch(`${SUPABASE_URL}/rest/v1/info_items?id=eq.${a.id}`,{method:'PATCH',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify({sort_order:b.sort_order})}),fetch(`${SUPABASE_URL}/rest/v1/info_items?id=eq.${b.id}`,{method:'PATCH',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify({sort_order:tmp})})]);
+    a.sort_order=b.sort_order;b.sort_order=tmp;
+    infoItems.sort((x,y)=>x.sort_order-y.sort_order);renderInfoLists();
+  }catch(e){alert('순서 변경 실패.');}
+}
+async function addItem(category){
+  const inputId=category==='event'?'new-event':'new-prize';
+  const input=document.getElementById(inputId);const content=input.value.trim();
+  if(!content){alert('내용을 입력해주세요.');return;}
+  const count=infoItems.filter(i=>i.category===category).length;
+  try{
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/info_items`,{method:'POST',headers:{...H,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify({category,content,sort_order:count+1})});
+    if(!res.ok)throw new Error();
+    const newItem=await res.json();infoItems.push(newItem[0]);input.value='';renderInfoLists();
+  }catch(e){alert('추가 실패.');}
+}
+async function deleteItem(id){
+  if(!confirm('삭제하시겠습니까?'))return;
+  try{await fetch(`${SUPABASE_URL}/rest/v1/info_items?id=eq.${id}`,{method:'DELETE',headers:H});infoItems=infoItems.filter(i=>i.id!==id);renderInfoLists();}catch(e){alert('삭제 실패.');}
+}
+document.getElementById('pw-input').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 
-    // 시트2: 전체 명단 (단순)
-    const ws2Data = [['번호','팀명','팀원','이름','학년','반','번호','연락처','기부물품','기타','신청일시']];
-    allTeams.forEach((t, idx) => {
-      t.members.forEach(m => {
-        ws2Data.push([idx+1, t.team_name, `팀원${m.member_order}`, m.name, m.grade, m.class, m.number, m.phone, t.donation||'', t.extra_info||'', new Date(t.created_at).toLocaleString('ko-KR')]);
-      });
+// ── 대회 설정 ──
+let currentSettings={};
+async function loadSettings(){
+  try{
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/site_settings?select=*`,{headers:H});
+    const data=await res.json();
+    if(!Array.isArray(data))return;
+    data.forEach(d=>{
+      currentSettings[d.key]=d.value;
+      const el=document.getElementById('setting-'+d.key.replace('_','-'));
+      if(el)el.value=d.value||'';
     });
-    const ws2 = XLSX.utils.aoa_to_sheet(ws2Data);
-    ws2['!cols'] = [{wch:6},{wch:14},{wch:8},{wch:10},{wch:6},{wch:5},{wch:5},{wch:14},{wch:16},{wch:18},{wch:18}];
-    XLSX.utils.book_append_sheet(wb, ws2, '전체 명단');
-
-    // 시트3: 기부물품
-    const ws3Data = [['팀명','기부물품']];
-    allTeams.filter(t => t.donation && t.donation.trim()).forEach(t => ws3Data.push([t.team_name, t.donation]));
-    const ws3 = XLSX.utils.aoa_to_sheet(ws3Data);
-    ws3['!cols'] = [{wch:14},{wch:24}];
-    XLSX.utils.book_append_sheet(wb, ws3, '기부물품');
-
-    const today = new Date().toLocaleDateString('ko-KR').replace(/\. /g,'-').replace(/\.$/,'');
-    XLSX.writeFile(wb, `하이록스_참가명단_${today}.xlsx`);
+    updateSettingsPreview();
+  }catch(e){}
+}
+function updateSettingsPreview(){
+  const dateVal=currentSettings['donation_date']||'';
+  const placeVal=currentSettings['donation_place']||'';
+  document.getElementById('preview-date').textContent=dateVal?'📅 제출 날짜: '+dateVal:'';
+  document.getElementById('preview-place').textContent=placeVal?(dateVal?' · ':'')+'📍 제출 장소: '+placeVal:'';
+}
+async function saveSetting(key){
+  const inputId='setting-'+key.replace('_','-');
+  const statusId=inputId+'-status';
+  const val=document.getElementById(inputId).value.trim();
+  const statusEl=document.getElementById(statusId);
+  try{
+    // upsert: 있으면 update, 없으면 insert
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/site_settings?key=eq.${key}`,{headers:H});
+    const existing=await res.json();
+    if(Array.isArray(existing)&&existing.length>0){
+      await fetch(`${SUPABASE_URL}/rest/v1/site_settings?key=eq.${key}`,{method:'PATCH',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify({value:val})});
+    }else{
+      await fetch(`${SUPABASE_URL}/rest/v1/site_settings`,{method:'POST',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify({key,value:val})});
+    }
+    currentSettings[key]=val;
+    updateSettingsPreview();
+    statusEl.textContent='✅ 저장됨 — 메인 페이지에 바로 반영됩니다';
+    statusEl.style.color='#16a34a';
+    setTimeout(()=>statusEl.textContent='',3000);
+  }catch(e){
+    statusEl.textContent='❌ 저장 실패. 다시 시도해주세요.';
+    statusEl.style.color='#b91c1c';
   }
-
-  // 종목/상품 관리
-  async function loadInfoItems() {
-    try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/info_items?select=*&order=sort_order.asc`, { headers });
-      infoItems = await res.json();
-      if (!Array.isArray(infoItems)) infoItems = [];
-      renderInfoLists();
-    } catch(e) { infoItems = []; }
-  }
-
-  function renderInfoLists() {
-    ['event','prize'].forEach(cat => {
-      const listId = cat === 'event' ? 'event-list' : 'prize-list';
-      const items = infoItems.filter(i => i.category === cat);
-      const ul = document.getElementById(listId);
-      if (items.length === 0) {
-        ul.innerHTML = `<li class="empty-list">등록된 ${cat==='event'?'종목':'상품'}이 없습니다</li>`; return;
-      }
-      ul.innerHTML = items.map((item, idx) =>
-        `<li class="item-row">
-          <span class="item-order">${idx+1}</span>
-          <span class="item-text">${item.content}</span>
-          <button class="del-item-btn" onclick="deleteItem(${item.id})">삭제</button>
-        </li>`
-      ).join('');
-    });
-  }
-
-  async function addItem(category) {
-    const inputId = category === 'event' ? 'new-event' : 'new-prize';
-    const input = document.getElementById(inputId);
-    const content = input.value.trim();
-    if (!content) { alert('내용을 입력해주세요.'); return; }
-    const existCount = infoItems.filter(i => i.category === category).length;
-    try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/info_items`, {
-        method: 'POST',
-        headers: { ...headers, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
-        body: JSON.stringify({ category, content, sort_order: existCount + 1 })
-      });
-      if (!res.ok) throw new Error();
-      input.value = '';
-      await loadInfoItems();
-    } catch(e) { alert('추가 실패. Supabase에 info_items 테이블이 필요합니다.'); }
-  }
-
-  async function deleteItem(id) {
-    if (!confirm('삭제하시겠습니까?')) return;
-    try {
-      await fetch(`${SUPABASE_URL}/rest/v1/info_items?id=eq.${id}`, { method: 'DELETE', headers });
-      infoItems = infoItems.filter(i => i.id !== id);
-      renderInfoLists();
-    } catch(e) { alert('삭제 실패.'); }
-  }
-
-  document.getElementById('pw-input').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+}
 </script>
 </body>
 </html>
