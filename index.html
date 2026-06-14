@@ -118,9 +118,18 @@
     .row-3 .field:last-child{grid-column:span 2;}
     .info-strip{grid-template-columns:1fr;}
   }
+  .deadline-bar.urgent{background:#b91c1c;animation:pulse-urgent 1.2s ease-in-out infinite;}
+  .deadline-bar.urgent .countdown{color:#fff;}
+  @keyframes pulse-urgent{0%,100%{opacity:1;}50%{opacity:0.65;}}
+  .hero-stat .val.urgent{color:#ff4d4d !important;animation:pulse-urgent 1.2s ease-in-out infinite;}
 </style>
 </head>
 <body>
+
+<!-- ── 공지 배너 (관리자 설정 시 표시) ── -->
+<div id="notice-banner" style="display:none;background:#111;color:#fff;text-align:center;padding:0.7rem 1rem;font-size:0.88rem;font-weight:600;border-bottom:3px solid var(--yellow);">
+  <span style="color:var(--yellow);margin-right:6px;">📢</span><span id="notice-text"></span>
+</div>
 
 <!-- ── Hero ── -->
 <div class="hero">
@@ -232,12 +241,22 @@
   </div>
 </div>
 
+<!-- 참가 신청 팀 공개 (관리자 설정 시 표시) -->
+<div class="info-section" id="teams-public-section" style="display:none;">
+  <div class="info-section-inner">
+    <div style="font-size:0.82rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--yellow);margin-bottom:1rem;display:flex;align-items:center;gap:8px;">
+      🔥 현재 신청한 팀 <span id="teams-public-count" style="background:var(--yellow);color:#111;padding:1px 8px;border-radius:50px;font-size:0.75rem;">0</span>
+    </div>
+    <div id="teams-public-list" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+  </div>
+</div>
+
 <!-- 폼 영역 -->
 <div class="form-wrap">
   <div class="container">
     <div class="closed-banner" id="closed-banner">
       <h3>⛔ 신청이 마감되었습니다</h3>
-      <p>2026년 6월 19일(금)에 신청이 종료되었습니다.<br>문의사항은 체육선생님께 직접 연락해주세요.</p>
+      <p id="closed-message-text">2026년 6월 19일(금)에 신청이 종료되었습니다.<br>문의사항은 체육선생님께 직접 연락해주세요.</p>
     </div>
     <div class="success-screen" id="success-screen">
       <div class="success-icon">🏅</div>
@@ -276,7 +295,6 @@
         <div class="field">
           <label>기부 물품 <span style="font-size:0.75rem;color:var(--gray-text);font-weight:400">(축제 당근마켓에 활용)</span></label>
           <input type="text" id="donation" placeholder="예: 과자 1박스, 음료수 2개">
-          <div id="donation-examples" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:0.5rem;"></div>
           <div class="donation-info" id="donation-info" style="margin-top:0.5rem;background:#fff9e6;border:1px solid #FFE600;border-radius:6px;padding:0.6rem 0.85rem;font-size:0.82rem;color:#555;line-height:1.6;">
             <span style="font-weight:700;color:#856404;">📦 기부물품 제출 안내</span><br>
             <span id="donation-date-text">📅 제출 날짜: 추후 공지</span><span id="donation-place-text"> · 📍 제출 장소: 추후 공지</span>
@@ -341,11 +359,16 @@
   function updateCountdown(){
     const diff=DEADLINE-new Date();
     const dday=document.getElementById('hero-dday'),ctxt=document.getElementById('countdown-text');
-    if(diff<=0){dday.textContent='마감';ctxt.textContent='신청이 마감되었습니다';document.getElementById('closed-banner').style.display='block';document.getElementById('form-area').style.display='none';}
+    const bar1=document.getElementById('deadline-bar-1');
+    if(diff<=0){dday.textContent='마감';ctxt.textContent='신청이 마감되었습니다';document.getElementById('closed-banner').style.display='block';document.getElementById('form-area').style.display='none';bar1.classList.remove('urgent');dday.classList.remove('urgent');}
     else{
       const days=Math.floor(diff/86400000),hours=Math.floor((diff%86400000)/3600000),mins=Math.floor((diff%3600000)/60000);
       dday.textContent=days>0?'D-'+days:'D-DAY';
       ctxt.textContent=days>0?days+'일 '+hours+'시간 '+mins+'분 남음':hours+'시간 '+mins+'분 남음';
+      // 마감 임박(3일 이하) 긴급 효과
+      const urgent=diff<=3*86400000;
+      bar1.classList.toggle('urgent',urgent);
+      dday.classList.toggle('urgent',urgent);
     }
     // 대회 D-day (설정된 경우만)
     if(EVENT_DATE){
@@ -369,19 +392,6 @@
       const events=items.filter(i=>i.category==='event'),prizes=items.filter(i=>i.category==='prize');
       if(events.length>0)document.getElementById('events-content').innerHTML='<ul class="event-list">'+events.map(e=>`<li class="event-item"><span class="event-dot"></span><span>${e.content}</span></li>`).join('')+'</ul>';
       if(prizes.length>0){const rc=['gold','silver','bronze'];document.getElementById('prizes-content').innerHTML='<ul class="prize-list">'+prizes.map((p,i)=>`<li class="prize-item"><span class="prize-rank ${rc[i]||'other'}">${i+1}위</span><span>${p.content}</span></li>`).join('')+'</ul>';}
-    }catch(e){}
-  }
-
-  // 기부물품 예시 칩 로드
-  async function loadDonationExamples(){
-    try{
-      const res=await fetch(`${SUPABASE_URL}/rest/v1/info_items?category=eq.donation_ex&select=*&order=sort_order.asc`,{headers:H});
-      const items=await res.json();
-      if(!Array.isArray(items)||items.length===0)return;
-      const box=document.getElementById('donation-examples');
-      box.innerHTML='<span style="font-size:0.72rem;color:#999;align-self:center;">예시 (탭하면 입력):</span>'+items.map(it=>
-        `<button type="button" onclick="document.getElementById('donation').value='${it.content.replace(/'/g,"\\'")}'" style="background:#f0f0f0;border:1px solid #ddd;border-radius:50px;padding:4px 12px;font-size:0.78rem;color:#555;cursor:pointer;font-family:inherit;">${it.content}</button>`
-      ).join('');
     }catch(e){}
   }
 
@@ -436,6 +446,36 @@
         const d=new Date(settings['event_date_iso']);
         if(!isNaN(d.getTime())) EVENT_DATE=d;
       }
+
+      // 공지 배너
+      if(settings['notice_text'] && settings['notice_text'].trim()){
+        document.getElementById('notice-text').textContent=settings['notice_text'];
+        document.getElementById('notice-banner').style.display='block';
+      }
+
+      // 참가팀 공개 여부
+      if(settings['show_public_teams']==='on'){
+        document.getElementById('teams-public-section').style.display='block';
+        loadPublicTeams();
+      }
+
+      // 마감 후 안내 문구
+      if(settings['closed_message'] && settings['closed_message'].trim()){
+        document.getElementById('closed-message-text').innerHTML=settings['closed_message'].replace(/\n/g,'<br>');
+      }
+    }catch(e){}
+  }
+
+  // 참가 신청 팀 공개 (팀명만)
+  async function loadPublicTeams(){
+    try{
+      const res=await fetch(`${SUPABASE_URL}/rest/v1/teams?select=team_name&order=created_at.desc`,{headers:H});
+      const teams=await res.json();
+      if(!Array.isArray(teams))return;
+      document.getElementById('teams-public-count').textContent=teams.length;
+      const box=document.getElementById('teams-public-list');
+      if(teams.length===0){box.innerHTML='<span style="color:#666;font-size:0.85rem;">아직 신청한 팀이 없습니다. 첫 번째 팀이 되어보세요!</span>';return;}
+      box.innerHTML=teams.map(t=>`<span style="background:#1e1e1e;border:1px solid #333;color:#eee;padding:5px 14px;border-radius:50px;font-size:0.85rem;font-weight:600;">✅ ${t.team_name}</span>`).join('');
     }catch(e){}
   }
 
@@ -510,7 +550,7 @@
     updateCountdown();
     setInterval(updateCountdown,30000);
   })();
-  loadTeamCount();loadInfoData();loadDonationExamples();
+  loadTeamCount();loadInfoData();
 </script>
 </body>
 </html>
