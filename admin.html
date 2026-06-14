@@ -117,6 +117,7 @@
   </div>
   <div class="admin-nav">
     <button class="nav-tab active" onclick="switchNav('teams')">📋 참가 명단</button>
+    <button class="nav-tab" onclick="switchNav('stats')">📊 통계</button>
     <button class="nav-tab" onclick="switchNav('dup')">⚠️ 중복 확인</button>
     <button class="nav-tab" onclick="switchNav('info')">🏃 종목 · 상품</button>
     <button class="nav-tab" onclick="switchNav('settings')">⚙️ 대회 설정</button>
@@ -143,6 +144,27 @@
           <tbody id="table-body"></tbody>
         </table>
         <div class="no-data" id="no-data" style="display:none">신청된 팀이 없습니다.</div>
+      </div>
+    </div>
+
+    <!-- 통계 탭 -->
+    <div class="tab-panel" id="panel-stats">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="val yellow" id="st-teams">-</div><div class="lbl">총 신청 팀</div></div>
+        <div class="stat-card"><div class="val" id="st-members">-</div><div class="lbl">총 참가 학생</div></div>
+        <div class="stat-card"><div class="val" id="st-donation">-</div><div class="lbl">기부 참여 팀</div></div>
+      </div>
+      <div class="section-card">
+        <h3>📊 학년별 참가 학생 수</h3>
+        <div id="grade-chart" style="display:grid;gap:10px;margin-top:0.5rem;"></div>
+      </div>
+      <div class="section-card">
+        <h3>📊 반별 참가 학생 수</h3>
+        <div id="class-chart" style="display:grid;gap:8px;margin-top:0.5rem;"></div>
+      </div>
+      <div class="section-card">
+        <h3>📈 시간대별 신청 추이</h3>
+        <div id="time-chart" style="display:flex;align-items:flex-end;gap:4px;height:140px;margin-top:0.5rem;padding-bottom:1.5rem;"></div>
       </div>
     </div>
 
@@ -219,6 +241,22 @@
         </div>
       </div>
 
+      <!-- 섹션 표시 설정 -->
+      <div class="section-card">
+        <h3>👁️ 메인페이지 섹션 표시</h3>
+        <p style="font-size:0.82rem;color:var(--gray-text);margin-bottom:1rem;">메인페이지의 각 섹션을 켜고 끌 수 있습니다.</p>
+        <div style="display:grid;gap:10px;">
+          <label style="display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0.85rem;background:#fafafa;border:1px solid var(--gray-mid);border-radius:var(--radius-sm);cursor:pointer;">
+            <span style="font-size:0.9rem;font-weight:600;">🏃 대회 종목 · 시상 내역 섹션</span>
+            <input type="checkbox" id="toggle-section-info" onchange="saveSectionToggle('section_info',this.checked)" style="width:18px;height:18px;cursor:pointer;">
+          </label>
+          <label style="display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0.85rem;background:#fafafa;border:1px solid var(--gray-mid);border-radius:var(--radius-sm);cursor:pointer;">
+            <span style="font-size:0.9rem;font-weight:600;">📋 출전 제한 규정 카드</span>
+            <input type="checkbox" id="toggle-section-rule" onchange="saveSectionToggle('section_rule',this.checked)" style="width:18px;height:18px;cursor:pointer;">
+          </label>
+        </div>
+      </div>
+
       <!-- 배경 색상 테마 -->
       <div class="section-card">
         <h3>🎨 배경 색상 테마</h3>
@@ -267,21 +305,74 @@
 
       <!-- 메인 헤드라인 -->
       <div class="section-card">
-        <h3>🎯 메인 헤드라인</h3>
-        <div style="display:grid;gap:1rem;">
-          <div class="field">
-            <label style="font-size:0.82rem;font-weight:600;color:#444;display:block;margin-bottom:0.35rem;">대회 타이틀 (HTML 가능 · &lt;br&gt;, &lt;em&gt; 사용)</label>
-            <textarea id="setting-hero-title" placeholder="교내&lt;br&gt;&lt;em&gt;HYROX&lt;/em&gt;대회" style="width:100%;min-height:70px;padding:0.65rem 0.85rem;border:1px solid var(--gray-mid);border-radius:var(--radius-sm);font-size:0.9rem;font-family:inherit;outline:none;background:#fafafa;resize:vertical;"></textarea>
-            <div style="display:flex;justify-content:flex-end;margin-top:6px;"><button class="btn primary" onclick="saveSetting('hero_title')">저장</button></div>
-            <p style="font-size:0.75rem;color:var(--gray-text);margin-top:0.3rem;" id="setting-hero-title-status"></p>
+        <h3>🎯 메인 헤드라인 — 대회 타이틀</h3>
+        <p style="font-size:0.82rem;color:var(--gray-text);margin-bottom:1rem;">줄별로 입력하면 그대로 줄바꿈되어 표시됩니다. 빈 칸은 무시됩니다. '강조' 체크 시 그 줄이 포인트 색상으로 표시됩니다.</p>
+        <div style="display:grid;gap:0.6rem;">
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:0.75rem;color:var(--gray-text);width:48px;">1번째 줄</span>
+            <input type="text" id="title-line-1" placeholder="교내" style="flex:1;padding:0.6rem 0.85rem;border:1px solid var(--gray-mid);border-radius:var(--radius-sm);font-size:0.95rem;font-family:inherit;outline:none;background:#fafafa;">
+            <label style="font-size:0.78rem;color:#444;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="title-em-1"> 강조</label>
           </div>
-          <div class="field">
-            <label style="font-size:0.82rem;font-weight:600;color:#444;display:block;margin-bottom:0.35rem;">서브 문구 (HTML 가능 · &lt;br&gt;, &lt;strong&gt; 사용)</label>
-            <textarea id="setting-hero-sub" placeholder="한계를 넘어라. &lt;strong&gt;지금 팀을 꾸리고 도전하세요.&lt;/strong&gt;&lt;br&gt;2인 1팀 · 기말고사 종료 후 개최" style="width:100%;min-height:70px;padding:0.65rem 0.85rem;border:1px solid var(--gray-mid);border-radius:var(--radius-sm);font-size:0.9rem;font-family:inherit;outline:none;background:#fafafa;resize:vertical;"></textarea>
-            <div style="display:flex;justify-content:flex-end;margin-top:6px;"><button class="btn primary" onclick="saveSetting('hero_sub')">저장</button></div>
-            <p style="font-size:0.75rem;color:var(--gray-text);margin-top:0.3rem;" id="setting-hero-sub-status"></p>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:0.75rem;color:var(--gray-text);width:48px;">2번째 줄</span>
+            <input type="text" id="title-line-2" placeholder="HYROX" style="flex:1;padding:0.6rem 0.85rem;border:1px solid var(--gray-mid);border-radius:var(--radius-sm);font-size:0.95rem;font-family:inherit;outline:none;background:#fafafa;">
+            <label style="font-size:0.78rem;color:#444;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="title-em-2" checked> 강조</label>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:0.75rem;color:var(--gray-text);width:48px;">3번째 줄</span>
+            <input type="text" id="title-line-3" placeholder="대회" style="flex:1;padding:0.6rem 0.85rem;border:1px solid var(--gray-mid);border-radius:var(--radius-sm);font-size:0.95rem;font-family:inherit;outline:none;background:#fafafa;">
+            <label style="font-size:0.78rem;color:#444;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="title-em-3"> 강조</label>
           </div>
         </div>
+        <div style="display:flex;gap:16px;align-items:center;margin-top:1rem;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <label style="font-size:0.78rem;color:#444;">글자 크기</label>
+            <input type="range" id="setting-hero-title-size" min="2" max="6" step="0.2" value="3.5" oninput="document.getElementById('title-size-val').textContent=this.value+'rem'" style="width:120px;">
+            <span style="font-size:0.75rem;color:var(--gray-text);" id="title-size-val">3.5rem</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <label style="font-size:0.78rem;color:#444;">기본 글자색</label>
+            <input type="color" id="setting-hero-title-color" value="#ffffff" style="width:40px;height:32px;border:1px solid var(--gray-mid);border-radius:6px;cursor:pointer;background:none;">
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:1rem;"><button class="btn primary" onclick="saveHeroTitle()">타이틀 저장</button></div>
+        <p style="font-size:0.75rem;color:var(--gray-text);margin-top:0.3rem;text-align:right;" id="hero-title-save-status"></p>
+      </div>
+
+      <!-- 서브 문구 -->
+      <div class="section-card">
+        <h3>💬 메인 헤드라인 — 서브 문구</h3>
+        <p style="font-size:0.82rem;color:var(--gray-text);margin-bottom:1rem;">줄별로 입력하면 그대로 줄바꿈됩니다. '강조' 체크 시 그 줄이 포인트 색상 + 굵게 표시됩니다.</p>
+        <div style="display:grid;gap:0.6rem;">
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:0.75rem;color:var(--gray-text);width:48px;">1번째 줄</span>
+            <input type="text" id="sub-line-1" placeholder="한계를 넘어라. 지금 팀을 꾸리고 도전하세요." style="flex:1;padding:0.6rem 0.85rem;border:1px solid var(--gray-mid);border-radius:var(--radius-sm);font-size:0.95rem;font-family:inherit;outline:none;background:#fafafa;">
+            <label style="font-size:0.78rem;color:#444;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="sub-em-1"> 강조</label>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:0.75rem;color:var(--gray-text);width:48px;">2번째 줄</span>
+            <input type="text" id="sub-line-2" placeholder="2인 1팀 · 기말고사 종료 후 개최 · 전원 참가 가능" style="flex:1;padding:0.6rem 0.85rem;border:1px solid var(--gray-mid);border-radius:var(--radius-sm);font-size:0.95rem;font-family:inherit;outline:none;background:#fafafa;">
+            <label style="font-size:0.78rem;color:#444;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="sub-em-2"> 강조</label>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:0.75rem;color:var(--gray-text);width:48px;">3번째 줄</span>
+            <input type="text" id="sub-line-3" placeholder="(선택)" style="flex:1;padding:0.6rem 0.85rem;border:1px solid var(--gray-mid);border-radius:var(--radius-sm);font-size:0.95rem;font-family:inherit;outline:none;background:#fafafa;">
+            <label style="font-size:0.78rem;color:#444;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="sub-em-3"> 강조</label>
+          </div>
+        </div>
+        <div style="display:flex;gap:16px;align-items:center;margin-top:1rem;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <label style="font-size:0.78rem;color:#444;">글자 크기</label>
+            <input type="range" id="setting-hero-sub-size" min="0.75" max="1.6" step="0.05" value="0.9" oninput="document.getElementById('sub-size-val').textContent=this.value+'rem'" style="width:120px;">
+            <span style="font-size:0.75rem;color:var(--gray-text);" id="sub-size-val">0.9rem</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <label style="font-size:0.78rem;color:#444;">기본 글자색</label>
+            <input type="color" id="setting-hero-sub-color" value="#999999" style="width:40px;height:32px;border:1px solid var(--gray-mid);border-radius:6px;cursor:pointer;background:none;">
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:1rem;"><button class="btn primary" onclick="saveHeroSub()">서브 문구 저장</button></div>
+        <p style="font-size:0.75rem;color:var(--gray-text);margin-top:0.3rem;text-align:right;" id="hero-sub-save-status"></p>
       </div>
 
       <!-- 일정 정보 -->
@@ -399,9 +490,11 @@ function doLogout(){
   document.getElementById('pw-input').value='';
 }
 function switchNav(tab){
-  document.querySelectorAll('.nav-tab').forEach((t,i)=>t.classList.toggle('active',(['teams','dup','info','settings'][i])===tab));
-  ['teams','dup','info','settings'].forEach(t=>document.getElementById('panel-'+t).classList.toggle('active',t===tab));
+  const tabs=['teams','stats','dup','info','settings'];
+  document.querySelectorAll('.nav-tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===tab));
+  tabs.forEach(t=>document.getElementById('panel-'+t).classList.toggle('active',t===tab));
   if(tab==='dup')renderDupTable();
+  if(tab==='stats')renderStats();
 }
 
 async function loadData(){
@@ -475,6 +568,63 @@ function renderDupTable(){
       return `<tr style="background:${i===0?'#fff5f5':'#fef2f2'}"><td style="font-weight:700;color:#b91c1c">${m.grade}학년 ${m.class}반 ${m.number}번</td><td>${m.name}</td><td>${team?team.team_name:'-'}</td><td style="font-size:0.75rem;color:var(--gray-text)">${ds}</td><td><button class="delete-btn" onclick="deleteTeam(${m.team_id},'${(team?team.team_name:'').replace(/'/g,"\\'")}')">팀삭제</button></td></tr>`;
     }).join('');
   }).join('<tr><td colspan="5" style="padding:4px;background:var(--gray-mid)"></td></tr>');
+}
+
+// ── 통계 ──
+function renderStats(){
+  const allMembers=allTeams.flatMap(t=>t.members);
+  document.getElementById('st-teams').textContent=allTeams.length;
+  document.getElementById('st-members').textContent=allMembers.length;
+  document.getElementById('st-donation').textContent=allTeams.filter(t=>t.donation&&t.donation.trim()).length;
+
+  // 학년별
+  const gradeCount={1:0,2:0,3:0};
+  allMembers.forEach(m=>{if(gradeCount[m.grade]!==undefined)gradeCount[m.grade]++;});
+  const gradeMax=Math.max(1,...Object.values(gradeCount));
+  document.getElementById('grade-chart').innerHTML=[1,2,3].map(g=>{
+    const v=gradeCount[g],pct=Math.round(v/gradeMax*100);
+    return `<div style="display:flex;align-items:center;gap:10px;">
+      <span style="width:48px;font-size:0.85rem;font-weight:700;">${g}학년</span>
+      <div style="flex:1;background:#f0f0f0;border-radius:6px;height:26px;overflow:hidden;">
+        <div style="width:${pct}%;background:var(--yellow);height:100%;border-radius:6px;min-width:${v>0?'28px':'0'};display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:0.8rem;font-weight:700;color:#111;transition:width 0.4s;">${v>0?v+'명':''}</div>
+      </div></div>`;
+  }).join('');
+
+  // 반별 (학년-반 조합)
+  const classCount={};
+  allMembers.forEach(m=>{const key=`${m.grade}-${m.class}`;classCount[key]=(classCount[key]||0)+1;});
+  const sortedClasses=Object.entries(classCount).sort((a,b)=>a[0].localeCompare(b[0],undefined,{numeric:true}));
+  const classMax=Math.max(1,...Object.values(classCount));
+  if(sortedClasses.length===0){
+    document.getElementById('class-chart').innerHTML='<p style="color:var(--gray-text);font-size:0.85rem;text-align:center;padding:1rem;">데이터가 없습니다.</p>';
+  }else{
+    document.getElementById('class-chart').innerHTML=sortedClasses.map(([key,v])=>{
+      const[g,c]=key.split('-'),pct=Math.round(v/classMax*100);
+      return `<div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:70px;font-size:0.82rem;font-weight:600;">${g}학년 ${c}반</span>
+        <div style="flex:1;background:#f0f0f0;border-radius:5px;height:22px;overflow:hidden;">
+          <div style="width:${pct}%;background:#111;height:100%;border-radius:5px;min-width:${v>0?'24px':'0'};display:flex;align-items:center;justify-content:flex-end;padding-right:7px;font-size:0.75rem;font-weight:700;color:#fff;transition:width 0.4s;">${v}</div>
+        </div></div>`;
+    }).join('');
+  }
+
+  // 시간대별 신청 추이 (날짜별)
+  const dayCount={};
+  allTeams.forEach(t=>{const d=new Date(t.created_at);const key=`${d.getMonth()+1}/${d.getDate()}`;dayCount[key]=(dayCount[key]||0)+1;});
+  const days=Object.entries(dayCount);
+  const dayMax=Math.max(1,...Object.values(dayCount));
+  if(days.length===0){
+    document.getElementById('time-chart').innerHTML='<p style="color:var(--gray-text);font-size:0.85rem;width:100%;text-align:center;">데이터가 없습니다.</p>';
+  }else{
+    document.getElementById('time-chart').innerHTML=days.map(([day,v])=>{
+      const h=Math.round(v/dayMax*100);
+      return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative;">
+        <span style="font-size:0.7rem;font-weight:700;color:#111;margin-bottom:2px;">${v}</span>
+        <div style="width:100%;max-width:40px;background:var(--yellow);border-radius:4px 4px 0 0;height:${h}%;min-height:4px;transition:height 0.4s;"></div>
+        <span style="font-size:0.65rem;color:var(--gray-text);position:absolute;bottom:-1.3rem;white-space:nowrap;">${day}</span>
+      </div>`;
+    }).join('');
+  }
 }
 
 async function deleteTeam(id,name){
@@ -630,6 +780,15 @@ async function loadSettings(){
     if(currentSettings['event_date_iso']){
       document.getElementById('setting-event-date-iso').value=currentSettings['event_date_iso'];
     }
+    // 헤드라인 타이틀/서브 → 줄별 입력칸으로 역변환
+    parseLinesToInputs(currentSettings['hero_title'],'title','em');
+    parseLinesToInputs(currentSettings['hero_sub'],'sub','strong');
+    // 슬라이더 값 라벨 갱신
+    if(currentSettings['hero_title_size']) document.getElementById('title-size-val').textContent=currentSettings['hero_title_size']+'rem';
+    if(currentSettings['hero_sub_size']) document.getElementById('sub-size-val').textContent=currentSettings['hero_sub_size']+'rem';
+    // 섹션 표시 토글 (기본값 on)
+    document.getElementById('toggle-section-info').checked=(currentSettings['section_info']!=='off');
+    document.getElementById('toggle-section-rule').checked=(currentSettings['section_rule']!=='off');
     // 테마 색상 칩 하이라이트
     if(currentSettings['theme_color']) pickTheme(currentSettings['theme_color']);
     refreshPublicTeamsBtn();
@@ -642,15 +801,51 @@ function updateSettingsPreview(){
   document.getElementById('preview-date').textContent=dateVal?'📅 제출 날짜: '+dateVal:'';
   document.getElementById('preview-place').textContent=placeVal?(dateVal?' · ':'')+'📍 제출 장소: '+placeVal:'';
 }
-async function upsertSetting(key,val){
+let undoHistory=[]; // {key, oldValue}
+async function upsertSetting(key,val,recordUndo=true){
   const res=await fetch(`${SUPABASE_URL}/rest/v1/site_settings?key=eq.${key}`,{headers:H});
   const existing=await res.json();
+  const oldVal=(Array.isArray(existing)&&existing.length>0)?existing[0].value:null;
+  if(recordUndo){
+    undoHistory.push({key,oldValue:oldVal});
+    if(undoHistory.length>20)undoHistory.shift();
+    showUndoBar(key);
+  }
   if(Array.isArray(existing)&&existing.length>0){
     await fetch(`${SUPABASE_URL}/rest/v1/site_settings?key=eq.${key}`,{method:'PATCH',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify({value:val})});
   }else{
     await fetch(`${SUPABASE_URL}/rest/v1/site_settings`,{method:'POST',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify({key,value:val})});
   }
   currentSettings[key]=val;
+}
+function showUndoBar(key){
+  let bar=document.getElementById('undo-bar');
+  if(!bar){
+    bar=document.createElement('div');
+    bar.id='undo-bar';
+    bar.style.cssText='position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:0.7rem 1.2rem;border-radius:50px;font-size:0.85rem;display:flex;align-items:center;gap:14px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+    document.body.appendChild(bar);
+  }
+  bar.innerHTML='<span>✅ 저장되었습니다</span><button onclick="undoLastChange()" style="background:var(--yellow);color:#111;border:none;padding:4px 14px;border-radius:50px;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:inherit;">↩ 되돌리기</button>';
+  bar.style.display='flex';
+  clearTimeout(window._undoTimer);
+  window._undoTimer=setTimeout(()=>{bar.style.display='none';},6000);
+}
+async function undoLastChange(){
+  if(undoHistory.length===0)return;
+  const last=undoHistory.pop();
+  try{
+    if(last.oldValue===null){
+      // 원래 없던 설정 → 삭제
+      await fetch(`${SUPABASE_URL}/rest/v1/site_settings?key=eq.${last.key}`,{method:'DELETE',headers:H});
+      delete currentSettings[last.key];
+    }else{
+      await upsertSetting(last.key,last.oldValue,false);
+    }
+    document.getElementById('undo-bar').style.display='none';
+    await loadSettings();
+    alert('이전 값으로 되돌렸습니다.');
+  }catch(e){alert('되돌리기 실패.');}
 }
 async function saveSetting(key){
   const inputId='setting-'+key.replace(/_/g,'-');
@@ -697,10 +892,71 @@ async function saveEventDate(){
   }
 }
 
+// ── 메인페이지 섹션 표시 토글 ──
+async function saveSectionToggle(key,checked){
+  try{ await upsertSetting(key,checked?'on':'off'); }catch(e){ alert('변경 실패.'); }
+}
+
 // ── 배경 색상 테마 ──
 function pickTheme(color){
   document.getElementById('setting-theme-color').value=color;
   document.querySelectorAll('.theme-chip').forEach(c=>c.classList.toggle('selected',c.dataset.color.toUpperCase()===color.toUpperCase()));
+}
+
+// ── 메인 헤드라인 (줄별 입력) ──
+function buildLinesHtml(prefix,emTag){
+  // prefix: 'title' or 'sub'
+  const lines=[];
+  for(let i=1;i<=3;i++){
+    const val=document.getElementById(`${prefix}-line-${i}`).value.trim();
+    if(!val)continue;
+    const em=document.getElementById(`${prefix}-em-${i}`).checked;
+    lines.push(em?`<${emTag}>${val}</${emTag}>`:val);
+  }
+  return lines.join('<br>');
+}
+function parseLinesToInputs(html,prefix,emTag){
+  if(!html)return;
+  // <br>로 분리
+  const parts=html.split(/<br\s*\/?>/i);
+  for(let i=0;i<3;i++){
+    const lineInput=document.getElementById(`${prefix}-line-${i+1}`);
+    const emInput=document.getElementById(`${prefix}-em-${i+1}`);
+    if(parts[i]!==undefined){
+      const raw=parts[i];
+      const emRegex=new RegExp(`^<${emTag}>(.*)</${emTag}>$`,'i');
+      const m=raw.match(emRegex);
+      if(m){lineInput.value=m[1];emInput.checked=true;}
+      else{
+        // strong/em 태그 안에 또 strong이 있을 수 있으니 태그 제거
+        const tmp=document.createElement('div');tmp.innerHTML=raw;
+        lineInput.value=tmp.textContent;
+        emInput.checked=/<(em|strong)>/i.test(raw);
+      }
+    }else{lineInput.value='';emInput.checked=false;}
+  }
+}
+async function saveHeroTitle(){
+  const statusEl=document.getElementById('hero-title-save-status');
+  try{
+    const html=buildLinesHtml('title','em');
+    await upsertSetting('hero_title',html);
+    await upsertSetting('hero_title_size',document.getElementById('setting-hero-title-size').value);
+    await upsertSetting('hero_title_color',document.getElementById('setting-hero-title-color').value);
+    statusEl.textContent='✅ 저장됨 — 메인 페이지에 바로 반영됩니다';
+    statusEl.style.color='#16a34a';setTimeout(()=>statusEl.textContent='',3000);
+  }catch(e){statusEl.textContent='❌ 저장 실패';statusEl.style.color='#b91c1c';}
+}
+async function saveHeroSub(){
+  const statusEl=document.getElementById('hero-sub-save-status');
+  try{
+    const html=buildLinesHtml('sub','strong');
+    await upsertSetting('hero_sub',html);
+    await upsertSetting('hero_sub_size',document.getElementById('setting-hero-sub-size').value);
+    await upsertSetting('hero_sub_color',document.getElementById('setting-hero-sub-color').value);
+    statusEl.textContent='✅ 저장됨 — 메인 페이지에 바로 반영됩니다';
+    statusEl.style.color='#16a34a';setTimeout(()=>statusEl.textContent='',3000);
+  }catch(e){statusEl.textContent='❌ 저장 실패';statusEl.style.color='#b91c1c';}
 }
 
 // ── 신청 팀 공개 토글 ──

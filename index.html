@@ -22,7 +22,7 @@
   .hero-school-tag{background:var(--yellow);color:var(--black);font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:2px;}
   .hero-year-tag{font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:2px;font-weight:700;}
   .hero h1{font-size:clamp(2.2rem,9vw,4rem);font-weight:900;letter-spacing:-2px;line-height:1;margin-bottom:0.75rem;color:var(--white);}
-  .hero h1 em{display:block;color:var(--yellow);font-style:normal;}
+  .hero h1 em{color:var(--yellow);font-style:normal;}
   .hero-sub{font-size:0.9rem;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:1.75rem;}
   .hero-sub strong{color:var(--yellow);}
   .hero-stats{display:flex;gap:0;border:1px solid rgba(255,255,255,0.15);border-radius:var(--radius-sm);overflow:hidden;max-width:360px;}
@@ -226,7 +226,7 @@
 <div class="deadline-bar" id="deadline-bar-2" style="display:none;background:#0d0d0d;">대회까지 <span class="countdown" id="countdown-text-2"></span></div>
 
 <!-- 종목/상품 -->
-<div class="info-section">
+<div class="info-section" id="section-info">
   <div class="info-section-inner">
     <div class="info-tabs">
       <button class="info-tab active" onclick="switchTab('events')">🏃 대회 종목</button>
@@ -267,7 +267,7 @@
 
     <div id="form-area">
       <!-- 출전 제한 안내 -->
-      <div class="rule-card">
+      <div class="rule-card" id="section-rule">
         <div class="rule-card-title" id="rule-title">출전 제한 규정</div>
         <ul class="rule-list" id="rule-list">
           <li class="rule-item">
@@ -433,6 +433,16 @@
       if(settings['hero_title']) document.getElementById('hero-title').innerHTML=settings['hero_title'];
       if(settings['hero_sub']) document.getElementById('hero-sub').innerHTML=settings['hero_sub'];
 
+      // 타이틀 스타일 (크기/색상)
+      const titleEl=document.getElementById('hero-title');
+      if(settings['hero_title_size']) titleEl.style.fontSize=settings['hero_title_size']+'rem';
+      if(settings['hero_title_color']) titleEl.style.color=settings['hero_title_color'];
+
+      // 서브문구 스타일 (크기/색상)
+      const subEl=document.getElementById('hero-sub');
+      if(settings['hero_sub_size']) subEl.style.fontSize=settings['hero_sub_size']+'rem';
+      if(settings['hero_sub_color']) subEl.style.color=settings['hero_sub_color'];
+
       // 신청마감/대회일정 표시 문구
       if(settings['strip_deadline']) document.getElementById('strip-deadline').textContent=settings['strip_deadline'];
       if(settings['strip_event_date']) document.getElementById('strip-event-date').textContent=settings['strip_event_date'];
@@ -463,6 +473,10 @@
       if(settings['closed_message'] && settings['closed_message'].trim()){
         document.getElementById('closed-message-text').innerHTML=settings['closed_message'].replace(/\n/g,'<br>');
       }
+
+      // 섹션 표시 토글 (off일 때만 숨김)
+      if(settings['section_info']==='off') document.getElementById('section-info').style.display='none';
+      if(settings['section_rule']==='off') document.getElementById('section-rule').style.display='none';
     }catch(e){}
   }
 
