@@ -16,7 +16,7 @@
 
   /* ── Hero ── */
   .hero{position:relative;overflow:hidden;background:#0a0a0a;padding:0;}
-  .hero-svg-bg{display:block;width:100%;height:auto;max-height:560px;object-fit:cover;}
+  .hero-svg-bg{display:block;width:100%;height:auto;max-height:560px;object-fit:cover;color:var(--yellow);}
   .hero-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:2rem 1.75rem 2.25rem;z-index:2;}
   .hero-top-bar{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;z-index:3;}
   .hero-school-tag{background:var(--yellow);color:var(--black);font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:2px;}
@@ -131,22 +131,22 @@
         <stop offset="100%" stop-color="#1a1200"/>
       </linearGradient>
       <linearGradient id="ygrad" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#FFE600" stop-opacity="0"/>
-        <stop offset="40%" stop-color="#FFE600" stop-opacity="1"/>
-        <stop offset="100%" stop-color="#FFE600" stop-opacity="0"/>
+        <stop offset="0%" stop-color="currentColor" stop-opacity="0"/>
+        <stop offset="40%" stop-color="currentColor" stop-opacity="1"/>
+        <stop offset="100%" stop-color="currentColor" stop-opacity="0"/>
       </linearGradient>
       <linearGradient id="stripe1" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#FFE600" stop-opacity="0.18"/>
-        <stop offset="100%" stop-color="#FFE600" stop-opacity="0"/>
+        <stop offset="0%" stop-color="currentColor" stop-opacity="0.18"/>
+        <stop offset="100%" stop-color="currentColor" stop-opacity="0"/>
       </linearGradient>
     </defs>
     <!-- 배경 -->
     <rect width="800" height="520" fill="url(#bg)"/>
     <!-- 대각 황색 스트라이프 (하이록스 시그니처) -->
-    <polygon points="0,520 120,0 200,0 80,520" fill="#FFE600" opacity="0.07"/>
-    <polygon points="150,520 270,0 310,0 190,520" fill="#FFE600" opacity="0.04"/>
-    <polygon points="580,0 700,520 760,520 640,0" fill="#FFE600" opacity="0.05"/>
-    <polygon points="680,0 800,520 800,400 740,0" fill="#FFE600" opacity="0.04"/>
+    <polygon points="0,520 120,0 200,0 80,520" fill="currentColor" opacity="0.07"/>
+    <polygon points="150,520 270,0 310,0 190,520" fill="currentColor" opacity="0.04"/>
+    <polygon points="580,0 700,520 760,520 640,0" fill="currentColor" opacity="0.05"/>
+    <polygon points="680,0 800,520 800,400 740,0" fill="currentColor" opacity="0.04"/>
     <!-- 격자 -->
     <g stroke="rgba(255,255,255,0.04)" stroke-width="1">
       <line x1="0" y1="65" x2="800" y2="65"/><line x1="0" y1="130" x2="800" y2="130"/>
@@ -160,60 +160,61 @@
     <text x="400" y="330" text-anchor="middle" font-size="190" font-weight="900"
       fill="rgba(255,230,0,0.05)" font-family="Arial Black,Impact,sans-serif" letter-spacing="-6">HYROX</text>
     <!-- 달리는 실루엣 (크고 선명하게) -->
-    <g transform="translate(470,55)" opacity="0.22" fill="#FFE600">
+    <g transform="translate(470,55)" opacity="0.22" fill="currentColor">
       <circle cx="90" cy="55" r="26"/>
       <ellipse cx="90" cy="118" rx="20" ry="36"/>
-      <line x1="90" y1="100" x2="148" y2="72" stroke="#FFE600" stroke-width="18" stroke-linecap="round"/>
-      <line x1="90" y1="100" x2="32" y2="128" stroke="#FFE600" stroke-width="18" stroke-linecap="round"/>
-      <line x1="90" y1="152" x2="140" y2="228" stroke="#FFE600" stroke-width="20" stroke-linecap="round"/>
-      <line x1="140" y1="228" x2="168" y2="305" stroke="#FFE600" stroke-width="16" stroke-linecap="round"/>
-      <line x1="90" y1="152" x2="44" y2="222" stroke="#FFE600" stroke-width="20" stroke-linecap="round"/>
-      <line x1="44" y1="222" x2="18" y2="298" stroke="#FFE600" stroke-width="16" stroke-linecap="round"/>
+      <line x1="90" y1="100" x2="148" y2="72" stroke="currentColor" stroke-width="18" stroke-linecap="round"/>
+      <line x1="90" y1="100" x2="32" y2="128" stroke="currentColor" stroke-width="18" stroke-linecap="round"/>
+      <line x1="90" y1="152" x2="140" y2="228" stroke="currentColor" stroke-width="20" stroke-linecap="round"/>
+      <line x1="140" y1="228" x2="168" y2="305" stroke="currentColor" stroke-width="16" stroke-linecap="round"/>
+      <line x1="90" y1="152" x2="44" y2="222" stroke="currentColor" stroke-width="20" stroke-linecap="round"/>
+      <line x1="44" y1="222" x2="18" y2="298" stroke="currentColor" stroke-width="16" stroke-linecap="round"/>
     </g>
     <!-- 두번째 작은 실루엣 -->
-    <g transform="translate(120,100) scale(0.75)" opacity="0.1" fill="#FFE600">
+    <g transform="translate(120,100) scale(0.75)" opacity="0.1" fill="currentColor">
       <circle cx="90" cy="55" r="26"/>
       <ellipse cx="90" cy="118" rx="20" ry="36"/>
-      <line x1="90" y1="100" x2="148" y2="72" stroke="#FFE600" stroke-width="18" stroke-linecap="round"/>
-      <line x1="90" y1="100" x2="32" y2="128" stroke="#FFE600" stroke-width="18" stroke-linecap="round"/>
-      <line x1="90" y1="152" x2="135" y2="225" stroke="#FFE600" stroke-width="20" stroke-linecap="round"/>
-      <line x1="90" y1="152" x2="48" y2="220" stroke="#FFE600" stroke-width="20" stroke-linecap="round"/>
+      <line x1="90" y1="100" x2="148" y2="72" stroke="currentColor" stroke-width="18" stroke-linecap="round"/>
+      <line x1="90" y1="100" x2="32" y2="128" stroke="currentColor" stroke-width="18" stroke-linecap="round"/>
+      <line x1="90" y1="152" x2="135" y2="225" stroke="currentColor" stroke-width="20" stroke-linecap="round"/>
+      <line x1="90" y1="152" x2="48" y2="220" stroke="currentColor" stroke-width="20" stroke-linecap="round"/>
     </g>
     <!-- 하단 황색 라인 -->
     <rect x="0" y="500" width="800" height="4" fill="url(#ygrad)"/>
     <rect x="0" y="508" width="500" height="2" fill="url(#ygrad)" opacity="0.5"/>
     <!-- 상단 황색 라인 -->
-    <rect x="0" y="0" width="800" height="4" fill="#FFE600"/>
+    <rect x="0" y="0" width="800" height="4" fill="currentColor"/>
     <!-- 우상단 원형 장식 -->
-    <circle cx="720" cy="80" r="120" fill="none" stroke="#FFE600" stroke-width="1" opacity="0.08"/>
-    <circle cx="720" cy="80" r="80" fill="none" stroke="#FFE600" stroke-width="1" opacity="0.06"/>
-    <circle cx="720" cy="80" r="40" fill="#FFE600" opacity="0.04"/>
+    <circle cx="720" cy="80" r="120" fill="none" stroke="currentColor" stroke-width="1" opacity="0.08"/>
+    <circle cx="720" cy="80" r="80" fill="none" stroke="currentColor" stroke-width="1" opacity="0.06"/>
+    <circle cx="720" cy="80" r="40" fill="currentColor" opacity="0.04"/>
     <!-- 좌하단 장식 -->
-    <circle cx="60" cy="460" r="80" fill="none" stroke="#FFE600" stroke-width="1" opacity="0.06"/>
+    <circle cx="60" cy="460" r="80" fill="none" stroke="currentColor" stroke-width="1" opacity="0.06"/>
   </svg>
   <div class="hero-top-bar">
     <span class="hero-school-tag">음성중학교</span>
     <span class="hero-year-tag">2026</span>
   </div>
   <div class="hero-content">
-    <h1>교내<br><em>HYROX</em>대회</h1>
-    <p class="hero-sub">
+    <h1 id="hero-title">교내<br><em>HYROX</em>대회</h1>
+    <p class="hero-sub" id="hero-sub">
       한계를 넘어라. <strong>지금 팀을 꾸리고 도전하세요.</strong><br>
       2인 1팀 · 기말고사 종료 후 개최 · 전원 참가 가능
     </p>
     <div class="hero-stats">
       <div class="hero-stat"><span class="val yl" id="hero-team-count">0</span><span class="lbl">신청팀</span></div>
       <div class="hero-stat"><span class="val">2인</span><span class="lbl">팀 구성</span></div>
-      <div class="hero-stat"><span class="val" id="hero-dday">-</span><span class="lbl">마감까지</span></div>
+      <div class="hero-stat"><span class="val" id="hero-dday">-</span><span class="lbl">신청마감</span></div>
     </div>
   </div>
 </div>
 
 <div class="info-strip">
-  <div class="info-item"><div class="i-label">신청 마감</div><div class="i-val">2026. 6. 19 (금)</div></div>
-  <div class="info-item"><div class="i-label">대회 일정</div><div class="i-val">기말고사 후 공지</div></div>
+  <div class="info-item"><div class="i-label">신청 마감</div><div class="i-val" id="strip-deadline">2026. 6. 19 (금)</div></div>
+  <div class="info-item"><div class="i-label">대회 일정</div><div class="i-val" id="strip-event-date">기말고사 후 공지</div></div>
 </div>
-<div class="deadline-bar">마감까지 <span class="countdown" id="countdown-text">계산 중...</span></div>
+<div class="deadline-bar" id="deadline-bar-1">신청 마감까지 <span class="countdown" id="countdown-text">계산 중...</span></div>
+<div class="deadline-bar" id="deadline-bar-2" style="display:none;background:#0d0d0d;">대회까지 <span class="countdown" id="countdown-text-2"></span></div>
 
 <!-- 종목/상품 -->
 <div class="info-section">
@@ -248,8 +249,8 @@
     <div id="form-area">
       <!-- 출전 제한 안내 -->
       <div class="rule-card">
-        <div class="rule-card-title">출전 제한 규정</div>
-        <ul class="rule-list">
+        <div class="rule-card-title" id="rule-title">출전 제한 규정</div>
+        <ul class="rule-list" id="rule-list">
           <li class="rule-item">
             <span class="rule-badge">금지</span>
             <span><strong>같은 학년</strong> 학생끼리는 같은 팀으로 출전할 수 없습니다. 반드시 <strong>서로 다른 학년</strong>의 학생으로 팀을 구성하세요.</span>
@@ -275,6 +276,7 @@
         <div class="field">
           <label>기부 물품 <span style="font-size:0.75rem;color:var(--gray-text);font-weight:400">(축제 당근마켓에 활용)</span></label>
           <input type="text" id="donation" placeholder="예: 과자 1박스, 음료수 2개">
+          <div id="donation-examples" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:0.5rem;"></div>
           <div class="donation-info" id="donation-info" style="margin-top:0.5rem;background:#fff9e6;border:1px solid #FFE600;border-radius:6px;padding:0.6rem 0.85rem;font-size:0.82rem;color:#555;line-height:1.6;">
             <span style="font-weight:700;color:#856404;">📦 기부물품 제출 안내</span><br>
             <span id="donation-date-text">📅 제출 날짜: 추후 공지</span><span id="donation-place-text"> · 📍 제출 장소: 추후 공지</span>
@@ -324,6 +326,7 @@
   const SUPABASE_URL='https://ifxbdzuxyjvuvvztctpq.supabase.co';
   const SUPABASE_KEY='sb_publishable_Qaz0sO5UHxkxeoSEE9YbvA_m6PE8l-d';
   const DEADLINE=new Date('2026-06-19T23:59:59');
+  let EVENT_DATE=null; // 관리자가 설정하면 Date 객체로 채워짐
   const H={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY};
 
   function switchTab(tab){
@@ -338,10 +341,23 @@
   function updateCountdown(){
     const diff=DEADLINE-new Date();
     const dday=document.getElementById('hero-dday'),ctxt=document.getElementById('countdown-text');
-    if(diff<=0){dday.textContent='마감';ctxt.textContent='신청이 마감되었습니다';document.getElementById('closed-banner').style.display='block';document.getElementById('form-area').style.display='none';return;}
-    const days=Math.floor(diff/86400000),hours=Math.floor((diff%86400000)/3600000),mins=Math.floor((diff%3600000)/60000);
-    dday.textContent=days>0?'D-'+days:'D-DAY';
-    ctxt.textContent=days>0?days+'일 '+hours+'시간 '+mins+'분 남음':hours+'시간 '+mins+'분 남음';
+    if(diff<=0){dday.textContent='마감';ctxt.textContent='신청이 마감되었습니다';document.getElementById('closed-banner').style.display='block';document.getElementById('form-area').style.display='none';}
+    else{
+      const days=Math.floor(diff/86400000),hours=Math.floor((diff%86400000)/3600000),mins=Math.floor((diff%3600000)/60000);
+      dday.textContent=days>0?'D-'+days:'D-DAY';
+      ctxt.textContent=days>0?days+'일 '+hours+'시간 '+mins+'분 남음':hours+'시간 '+mins+'분 남음';
+    }
+    // 대회 D-day (설정된 경우만)
+    if(EVENT_DATE){
+      const diff2=EVENT_DATE-new Date();
+      const bar2=document.getElementById('deadline-bar-2'),ctxt2=document.getElementById('countdown-text-2');
+      bar2.style.display='block';
+      if(diff2<=0){ctxt2.textContent='대회 당일입니다! 🏃';}
+      else{
+        const d2=Math.floor(diff2/86400000),h2=Math.floor((diff2%86400000)/3600000),m2=Math.floor((diff2%3600000)/60000);
+        ctxt2.textContent=(d2>0?'D-'+d2:'D-DAY')+' ('+(d2>0?d2+'일 '+h2+'시간 '+m2+'분 남음':h2+'시간 '+m2+'분 남음')+')';
+      }
+    }
   }
   async function loadTeamCount(){
     try{const res=await fetch(`${SUPABASE_URL}/rest/v1/teams?select=id`,{headers:H});const data=await res.json();if(Array.isArray(data))document.getElementById('hero-team-count').textContent=data.length;}catch(e){}
@@ -356,20 +372,70 @@
     }catch(e){}
   }
 
-  // 기부물품 제출 날짜/장소 설정 로드
+  // 기부물품 예시 칩 로드
+  async function loadDonationExamples(){
+    try{
+      const res=await fetch(`${SUPABASE_URL}/rest/v1/info_items?category=eq.donation_ex&select=*&order=sort_order.asc`,{headers:H});
+      const items=await res.json();
+      if(!Array.isArray(items)||items.length===0)return;
+      const box=document.getElementById('donation-examples');
+      box.innerHTML='<span style="font-size:0.72rem;color:#999;align-self:center;">예시 (탭하면 입력):</span>'+items.map(it=>
+        `<button type="button" onclick="document.getElementById('donation').value='${it.content.replace(/'/g,"\\'")}'" style="background:#f0f0f0;border:1px solid #ddd;border-radius:50px;padding:4px 12px;font-size:0.78rem;color:#555;cursor:pointer;font-family:inherit;">${it.content}</button>`
+      ).join('');
+    }catch(e){}
+  }
+
+  // 색상 밝기 조절 헬퍼
+  function shadeColor(color,percent){
+    let R=parseInt(color.substring(1,3),16),G=parseInt(color.substring(3,5),16),B=parseInt(color.substring(5,7),16);
+    R=Math.round(R*(100+percent)/100);G=Math.round(G*(100+percent)/100);B=Math.round(B*(100+percent)/100);
+    R=Math.min(255,Math.max(0,R));G=Math.min(255,Math.max(0,G));B=Math.min(255,Math.max(0,B));
+    return '#'+R.toString(16).padStart(2,'0')+G.toString(16).padStart(2,'0')+B.toString(16).padStart(2,'0');
+  }
+
+  // 사이트 전체 설정 로드 (텍스트, 날짜 등)
   async function loadSettings(){
     try{
       const res=await fetch(`${SUPABASE_URL}/rest/v1/site_settings?select=*`,{headers:H});
       const data=await res.json();
-      if(!Array.isArray(data)||data.length===0)return;
+      if(!Array.isArray(data))return;
       const settings={};
       data.forEach(d=>settings[d.key]=d.value);
+
+      // 기부물품 안내
       const dateVal=settings['donation_date']||'';
       const placeVal=settings['donation_place']||'';
-      const dateEl=document.getElementById('donation-date-text');
-      const placeEl=document.getElementById('donation-place-text');
-      dateEl.textContent='📅 제출 날짜: '+(dateVal||'추후 공지');
-      placeEl.textContent=' · 📍 제출 장소: '+(placeVal||'추후 공지');
+      document.getElementById('donation-date-text').textContent='📅 제출 날짜: '+(dateVal||'추후 공지');
+      document.getElementById('donation-place-text').textContent=' · 📍 제출 장소: '+(placeVal||'추후 공지');
+
+      // 기부물품 입력 예시 (placeholder)
+      if(settings['donation_placeholder']) document.getElementById('donation').placeholder=settings['donation_placeholder'];
+
+      // 배경 색상 테마
+      if(settings['theme_color']){
+        const c=settings['theme_color'];
+        document.documentElement.style.setProperty('--yellow',c);
+        // 어두운 버전 자동 계산
+        document.documentElement.style.setProperty('--yellow-dark',shadeColor(c,-20));
+      }
+
+      // 히어로 타이틀 / 서브문구
+      if(settings['hero_title']) document.getElementById('hero-title').innerHTML=settings['hero_title'];
+      if(settings['hero_sub']) document.getElementById('hero-sub').innerHTML=settings['hero_sub'];
+
+      // 신청마감/대회일정 표시 문구
+      if(settings['strip_deadline']) document.getElementById('strip-deadline').textContent=settings['strip_deadline'];
+      if(settings['strip_event_date']) document.getElementById('strip-event-date').textContent=settings['strip_event_date'];
+
+      // 출전 제한 규정
+      if(settings['rule_title']) document.getElementById('rule-title').textContent=settings['rule_title'];
+      if(settings['rule_list_html']) document.getElementById('rule-list').innerHTML=settings['rule_list_html'];
+
+      // 대회 날짜 (D-day용)
+      if(settings['event_date_iso']){
+        const d=new Date(settings['event_date_iso']);
+        if(!isNaN(d.getTime())) EVENT_DATE=d;
+      }
     }catch(e){}
   }
 
@@ -439,7 +505,12 @@
     }catch(e){showToast('❌ 오류가 발생했습니다. 다시 시도해주세요.','error');btn.disabled=false;btn.textContent='🏃 지금 바로 참가 신청하기';}
   }
 
-  updateCountdown();setInterval(updateCountdown,30000);loadTeamCount();loadInfoData();loadSettings();
+  (async()=>{
+    await loadSettings();
+    updateCountdown();
+    setInterval(updateCountdown,30000);
+  })();
+  loadTeamCount();loadInfoData();loadDonationExamples();
 </script>
 </body>
 </html>
