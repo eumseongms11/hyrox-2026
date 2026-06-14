@@ -257,10 +257,17 @@
 <!-- 참가 신청 팀 공개 (관리자 설정 시 표시) -->
 <div class="info-section" id="teams-public-section" style="display:none;">
   <div class="info-section-inner">
-    <div style="font-size:0.82rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--yellow);margin-bottom:1rem;display:flex;align-items:center;gap:8px;">
-      🔥 현재 신청한 팀 <span id="teams-public-count" style="background:var(--yellow);color:#111;padding:1px 8px;border-radius:50px;font-size:0.75rem;">0</span>
+    <button type="button" id="teams-public-toggle" onclick="togglePublicTeamsList()" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:var(--radius-sm);padding:0.85rem 1rem;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:inherit;color:var(--white);transition:background 0.15s;">
+      <span style="display:flex;align-items:center;gap:10px;font-size:0.88rem;font-weight:700;">
+        <span style="color:var(--yellow);">🔥 현재 신청한 팀</span>
+        <span id="teams-public-count" style="background:var(--yellow);color:#111;padding:2px 10px;border-radius:50px;font-size:0.75rem;font-weight:900;">0</span>
+        <span style="color:#777;font-size:0.78rem;font-weight:500;">팀</span>
+      </span>
+      <span id="teams-public-arrow" style="color:var(--yellow);font-size:1.1rem;transition:transform 0.25s;">▼</span>
+    </button>
+    <div id="teams-public-list-wrap" style="max-height:0;overflow:hidden;transition:max-height 0.35s ease;">
+      <div id="teams-public-list" style="display:flex;flex-wrap:wrap;gap:8px;padding:1rem 0.25rem 0.25rem;max-height:280px;overflow-y:auto;"></div>
     </div>
-    <div id="teams-public-list" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
   </div>
 </div>
 
@@ -501,9 +508,25 @@
       if(!Array.isArray(teams))return;
       document.getElementById('teams-public-count').textContent=teams.length;
       const box=document.getElementById('teams-public-list');
-      if(teams.length===0){box.innerHTML='<span style="color:#666;font-size:0.85rem;">아직 신청한 팀이 없습니다. 첫 번째 팀이 되어보세요!</span>';return;}
+      if(teams.length===0){box.innerHTML='<span style="color:#666;font-size:0.85rem;padding:0.5rem;">아직 신청한 팀이 없습니다. 첫 번째 팀이 되어보세요!</span>';return;}
       box.innerHTML=teams.map(t=>`<span style="background:#1e1e1e;border:1px solid #333;color:#eee;padding:5px 14px;border-radius:50px;font-size:0.85rem;font-weight:600;">✅ ${t.team_name}</span>`).join('');
     }catch(e){}
+  }
+
+  // 신청 팀 목록 접기/펼치기
+  function togglePublicTeamsList(){
+    const wrap=document.getElementById('teams-public-list-wrap');
+    const arrow=document.getElementById('teams-public-arrow');
+    const isOpen=wrap.style.maxHeight && wrap.style.maxHeight!=='0px';
+    if(isOpen){
+      wrap.style.maxHeight='0';
+      arrow.style.transform='rotate(0deg)';
+    }else{
+      // 펼침 — 내부 콘텐츠 높이만큼 (최대 320px)
+      const inner=document.getElementById('teams-public-list');
+      wrap.style.maxHeight=Math.min(inner.scrollHeight+32,320)+'px';
+      arrow.style.transform='rotate(180deg)';
+    }
   }
 
   // 중복 체크 (학년+반+번호)
