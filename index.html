@@ -6,6 +6,7 @@
 <title>2026 음성중 HYROX 대회 참가신청</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   :root{
     --yellow:#FFE600;--yellow-dark:#ccb800;
     --black:#0a0a0a;--white:#fff;
@@ -15,15 +16,16 @@
   body{font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#111;color:var(--white);min-height:100vh;}
 
   /* ── Hero ── */
-  .hero{position:relative;overflow:hidden;background:#0a0a0a;padding:0;}
-  .hero-svg-bg{display:block;width:100%;height:auto;max-height:560px;object-fit:cover;color:var(--yellow);}
-  .hero-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:2rem 1.75rem 2.25rem;z-index:2;}
-  .hero-top-bar{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;z-index:3;}
+  .hero{position:relative;overflow:hidden;background:#0a0a0a;padding:0;min-height:480px;display:flex;flex-direction:column;justify-content:flex-end;}
+  .hero-svg-bg{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;color:var(--yellow);z-index:0;}
+  .hero-gradient{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(10,10,10,0.5) 0%,rgba(10,10,10,0.15) 35%,rgba(10,10,10,0.6) 75%,rgba(10,10,10,0.92) 100%);pointer-events:none;}
+  .hero-content{position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:5rem 1.75rem 2.25rem;z-index:2;width:100%;}
+  .hero-top-bar{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:calc(1rem + env(safe-area-inset-top,0px)) 1.5rem 1rem;z-index:3;}
   .hero-school-tag{background:var(--yellow);color:var(--black);font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:2px;}
   .hero-year-tag{font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:2px;font-weight:700;}
-  .hero h1{font-size:clamp(2.2rem,9vw,4rem);font-weight:900;letter-spacing:-2px;line-height:1;margin-bottom:0.75rem;color:var(--white);}
+  .hero h1{font-size:clamp(2rem,8vw,3.8rem);font-weight:900;letter-spacing:-2px;line-height:1.05;margin-bottom:0.75rem;color:var(--white);}
   .hero h1 em{color:var(--yellow);font-style:normal;}
-  .hero-sub{font-size:0.9rem;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:1.75rem;}
+  .hero-sub{font-size:clamp(0.82rem,3.5vw,0.95rem);color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:1.75rem;}
   .hero-sub strong{color:var(--yellow);}
   .hero-stats{display:flex;gap:0;border:1px solid rgba(255,255,255,0.15);border-radius:var(--radius-sm);overflow:hidden;max-width:360px;}
   .hero-stat{flex:1;text-align:center;padding:0.8rem 0.5rem;border-right:1px solid rgba(255,255,255,0.1);}
@@ -113,10 +115,20 @@
   .closed-banner h3{font-size:1.2rem;font-weight:800;margin-bottom:0.5rem;}
   .closed-banner p{font-size:0.9rem;color:rgba(255,255,255,0.5);}
 
+  @media(max-width:600px){
+    .hero{min-height:440px;}
+    .hero-content{padding:4.5rem 1.25rem 2rem;}
+    .container{padding:1.5rem 1rem 3rem;}
+    .info-section-inner{padding:1.25rem 1rem;}
+    .card{padding:1.4rem 1.15rem;}
+    .rule-card{padding:1.1rem 1.15rem;}
+  }
   @media(max-width:400px){
     .row-3{grid-template-columns:1fr 1fr;}
     .row-3 .field:last-child{grid-column:span 2;}
     .info-strip{grid-template-columns:1fr;}
+    .hero-stat .val{font-size:1.15rem;}
+    .hero-stat{padding:0.7rem 0.35rem;}
   }
   .deadline-bar.urgent{background:#b91c1c;animation:pulse-urgent 1.2s ease-in-out infinite;}
   .deadline-bar.urgent .countdown{color:#fff;}
@@ -200,6 +212,7 @@
     <!-- 좌하단 장식 -->
     <circle cx="60" cy="460" r="80" fill="none" stroke="currentColor" stroke-width="1" opacity="0.06"/>
   </svg>
+  <div class="hero-gradient"></div>
   <div class="hero-top-bar">
     <span class="hero-school-tag">음성중학교</span>
     <span class="hero-year-tag">2026</span>
