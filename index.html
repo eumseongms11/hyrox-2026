@@ -347,9 +347,9 @@
 
       <!-- 추가 정보 -->
       <div class="card">
-        <div class="card-title">추가 정보 (선택)</div>
+        <div class="card-title">추가 정보</div>
         <div class="field">
-          <label>기부 물품 <span style="font-size:0.75rem;color:var(--gray-text);font-weight:400">(축제 당근마켓에 활용)</span></label>
+          <label>기부 물품 <span class="req">*</span> <span style="font-size:0.75rem;color:var(--gray-text);font-weight:400">(축제 당근마켓에 활용)</span></label>
           <input type="text" id="donation" placeholder="예: 과자 1박스, 음료수 2개">
           <div class="donation-info" id="donation-info" style="margin-top:0.5rem;background:#fff9e6;border:1px solid #FFE600;border-radius:6px;padding:0.6rem 0.85rem;font-size:0.82rem;color:#555;line-height:1.6;">
             <span style="font-weight:700;color:#856404;">📦 기부물품 제출 안내</span><br>
@@ -605,6 +605,7 @@
     const req=[{id:'m_name',label:'이름'},{id:'m_grade',label:'학년'},{id:'m_class',label:'반'},{id:'m_number',label:'번호'},{id:'m_phone',label:'연락처'}];
     for(const f of req){const el=document.getElementById(f.id);if(!el.value.trim()){showToast('⚠️ '+f.label+'을(를) 입력해주세요','error');el.focus();return false;}}
     if(!document.getElementById('m_ability').value){showToast('⚠️ 운동 능력을 선택해주세요','error');return false;}
+    if(!document.getElementById('donation').value.trim()){showToast('⚠️ 기부 물품을 입력해주세요','error');document.getElementById('donation').focus();return false;}
     return true;
   }
 
