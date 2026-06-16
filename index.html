@@ -94,6 +94,15 @@
   /* 중복 경고 */
   .dup-warning{background:#fff3cd;border:1px solid #ffc107;border-radius:var(--radius-sm);padding:0.75rem 1rem;font-size:0.85rem;color:#856404;margin-top:0.5rem;display:none;}
   .dup-warning.show{display:block;}
+  .ability-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+  .ability-btn{background:#fafafa;border:2px solid var(--gray-mid);border-radius:var(--radius-sm);padding:0.85rem 0.4rem;font-family:inherit;font-size:1rem;font-weight:700;color:#444;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:4px;-webkit-appearance:none;}
+  .ability-btn:hover{border-color:#999;background:#fff;}
+  .ability-btn.active{border-color:#111;background:#111;color:#fff;}
+  .ability-btn.locked{background:#fff3cd;border-color:#ffc107;color:#856404;cursor:not-allowed;}
+  .ability-btn.locked.active{background:#ffc107;color:#111;border-color:#ffc107;}
+  .ability-desc{font-size:0.7rem;color:#888;font-weight:500;}
+  .ability-btn.active .ability-desc{color:#eee;}
+  .ability-btn.locked .ability-desc{color:#a87f00;}
 
   .submit-btn{width:100%;padding:1.1rem;background:var(--yellow);color:var(--black);border:none;border-radius:var(--radius-sm);font-size:1.05rem;font-weight:900;font-family:inherit;cursor:pointer;letter-spacing:0.5px;transition:background 0.15s,transform 0.1s;}
   .submit-btn:hover{background:var(--yellow-dark);}
@@ -224,7 +233,7 @@
       2인 1팀 · 기말고사 종료 후 개최 · 전원 참가 가능
     </p>
     <div class="hero-stats">
-      <div class="hero-stat"><span class="val yl" id="hero-team-count">0</span><span class="lbl">신청팀</span></div>
+      <div class="hero-stat"><span class="val yl" id="hero-team-count">0</span><span class="lbl">신청자</span></div>
       <div class="hero-stat"><span class="val">2인</span><span class="lbl">팀 구성</span></div>
       <div class="hero-stat"><span class="val" id="hero-dday">-</span><span class="lbl">신청마감</span></div>
     </div>
@@ -259,9 +268,9 @@
   <div class="info-section-inner">
     <button type="button" id="teams-public-toggle" onclick="togglePublicTeamsList()" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:var(--radius-sm);padding:0.85rem 1rem;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:inherit;color:var(--white);transition:background 0.15s;">
       <span style="display:flex;align-items:center;gap:10px;font-size:0.88rem;font-weight:700;">
-        <span style="color:var(--yellow);">🔥 현재 신청한 팀</span>
+        <span style="color:var(--yellow);">🔥 현재 신청자</span>
         <span id="teams-public-count" style="background:var(--yellow);color:#111;padding:2px 10px;border-radius:50px;font-size:0.75rem;font-weight:900;">0</span>
-        <span style="color:#777;font-size:0.78rem;font-weight:500;">팀</span>
+        <span style="color:#777;font-size:0.78rem;font-weight:500;">명</span>
       </span>
       <span id="teams-public-arrow" style="color:var(--yellow);font-size:1.1rem;transition:transform 0.25s;">▼</span>
     </button>
@@ -282,7 +291,7 @@
       <div class="success-icon">🏅</div>
       <h2>신청 완료!</h2>
       <div class="success-team-name" id="success-team-name"></div>
-      <p>팀 신청이 정상적으로 접수되었습니다.<br>대회 일정은 추후 공지될 예정입니다.</p>
+      <p>참가 신청이 정상적으로 접수되었습니다.<br>마감일 이후 팀 배정 결과는 추후 안내될 예정입니다.</p>
     </div>
 
     <div id="form-area">
@@ -292,26 +301,53 @@
         <ul class="rule-list" id="rule-list">
           <li class="rule-item">
             <span class="rule-badge">금지</span>
-            <span><strong>같은 학년</strong> 학생끼리는 같은 팀으로 출전할 수 없습니다. 반드시 <strong>서로 다른 학년</strong>의 학생으로 팀을 구성하세요.</span>
+            <span><strong>개인별로 참가 신청</strong>을 받은 후, <strong>마감일 이후 무작위로 2인 팀을 배정</strong>합니다.</span>
+          </li>
+          <li class="rule-item">
+            <span class="rule-badge">조건</span>
+            <span>팀 배정은 <strong>다른 학년</strong>의 학생끼리만 이루어지며, <strong>운동능력이 균형</strong>있게 배분됩니다.</span>
           </li>
           <li class="rule-item">
             <span class="rule-badge">금지</span>
-            <span><strong>운동부 학생끼리</strong> 팀을 구성하는 것은 금지됩니다. 운동부 학생 + 일반 학생 조합은 참가 가능합니다.</span>
+            <span>운동부 학생끼리, 운동을 잘하는 학생끼리는 같은 팀이 되지 않습니다.</span>
           </li>
           <li class="rule-item">
             <span class="rule-badge yellow">주의</span>
-            <span>중복 신청은 자동으로 차단됩니다. 1인 1팀만 참가 가능합니다.</span>
+            <span>중복 신청은 자동으로 차단됩니다. 1인 1회만 신청 가능합니다.</span>
           </li>
         </ul>
       </div>
 
-      <!-- 팀 정보 -->
+      <!-- 신청자 정보 -->
       <div class="card">
-        <div class="card-title">팀 정보</div>
-        <div class="field">
-          <label>팀명 <span class="req">*</span></label>
-          <input type="text" id="team_name" placeholder="팀명을 입력하세요" maxlength="20">
+        <div class="card-title">신청자 정보</div>
+        <div class="field"><label>이름 <span class="req">*</span></label><input type="text" id="m_name" placeholder="이름" maxlength="10"></div>
+        <div class="row-3">
+          <div class="field"><label>학년 <span class="req">*</span></label><input type="number" id="m_grade" placeholder="1" min="1" max="3"></div>
+          <div class="field"><label>반 <span class="req">*</span></label><input type="number" id="m_class" placeholder="1" min="1" max="10"></div>
+          <div class="field"><label>번호 <span class="req">*</span></label><input type="number" id="m_number" placeholder="1" min="1" max="50"></div>
         </div>
+        <div class="field"><label>연락처 <span class="req">*</span></label><input type="tel" id="m_phone" placeholder="010-0000-0000"></div>
+
+        <div class="field">
+          <label>운동 능력 <span class="req">*</span></label>
+          <div class="ability-grid" id="ability-grid">
+            <button type="button" class="ability-btn" data-val="상" onclick="pickAbility('상')">💪 상<span class="ability-desc">자신 있어요</span></button>
+            <button type="button" class="ability-btn" data-val="중" onclick="pickAbility('중')">🙂 중<span class="ability-desc">평범해요</span></button>
+            <button type="button" class="ability-btn" data-val="하" onclick="pickAbility('하')">😅 하<span class="ability-desc">자신 없어요</span></button>
+          </div>
+          <input type="hidden" id="m_ability" value="">
+          <div class="athlete-warning" id="athlete-warning" style="display:none;margin-top:0.6rem;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;padding:0.6rem 0.85rem;font-size:0.82rem;color:#856404;">
+            🏅 <strong id="athlete-name"></strong>님은 <strong>운동부</strong>로 등록되어 있어 운동능력 '상' 이상으로 분류됩니다.
+          </div>
+        </div>
+
+        <div class="dup-warning" id="dup-warn">⚠️ 이미 신청된 학생입니다.</div>
+      </div>
+
+      <!-- 추가 정보 -->
+      <div class="card">
+        <div class="card-title">추가 정보 (선택)</div>
         <div class="field">
           <label>기부 물품 <span style="font-size:0.75rem;color:var(--gray-text);font-weight:400">(축제 당근마켓에 활용)</span></label>
           <input type="text" id="donation" placeholder="예: 과자 1박스, 음료수 2개">
@@ -323,33 +359,6 @@
         <div class="field">
           <label>기타 전달사항</label>
           <textarea id="extra_info" placeholder="선생님께 전달할 내용이 있으면 입력하세요"></textarea>
-        </div>
-      </div>
-
-      <!-- 팀원 정보 -->
-      <div class="card">
-        <div class="card-title">팀원 정보</div>
-        <div class="member-block">
-          <div class="member-label">팀원 1</div>
-          <div class="field"><label>이름 <span class="req">*</span></label><input type="text" id="m1_name" placeholder="이름"></div>
-          <div class="row-3">
-            <div class="field"><label>학년 <span class="req">*</span></label><input type="number" id="m1_grade" placeholder="1" min="1" max="3"></div>
-            <div class="field"><label>반 <span class="req">*</span></label><input type="number" id="m1_class" placeholder="1" min="1" max="10"></div>
-            <div class="field"><label>번호 <span class="req">*</span></label><input type="number" id="m1_number" placeholder="1" min="1" max="50"></div>
-          </div>
-          <div class="field"><label>연락처 <span class="req">*</span></label><input type="tel" id="m1_phone" placeholder="010-0000-0000"></div>
-          <div class="dup-warning" id="dup-warn-1">⚠️ 이미 다른 팀에 신청된 학생입니다.</div>
-        </div>
-        <div class="member-block">
-          <div class="member-label">팀원 2</div>
-          <div class="field"><label>이름 <span class="req">*</span></label><input type="text" id="m2_name" placeholder="이름"></div>
-          <div class="row-3">
-            <div class="field"><label>학년 <span class="req">*</span></label><input type="number" id="m2_grade" placeholder="1" min="1" max="3"></div>
-            <div class="field"><label>반 <span class="req">*</span></label><input type="number" id="m2_class" placeholder="1" min="1" max="10"></div>
-            <div class="field"><label>번호 <span class="req">*</span></label><input type="number" id="m2_number" placeholder="1" min="1" max="50"></div>
-          </div>
-          <div class="field"><label>연락처 <span class="req">*</span></label><input type="tel" id="m2_phone" placeholder="010-0000-0000"></div>
-          <div class="dup-warning" id="dup-warn-2">⚠️ 이미 다른 팀에 신청된 학생입니다.</div>
         </div>
       </div>
 
@@ -403,7 +412,7 @@
     }
   }
   async function loadTeamCount(){
-    try{const res=await fetch(`${SUPABASE_URL}/rest/v1/teams?select=id`,{headers:H});const data=await res.json();if(Array.isArray(data))document.getElementById('hero-team-count').textContent=data.length;}catch(e){}
+    try{const res=await fetch(`${SUPABASE_URL}/rest/v1/members?select=id`,{headers:H});const data=await res.json();if(Array.isArray(data))document.getElementById('hero-team-count').textContent=data.length;}catch(e){}
   }
   async function loadInfoData(){
     try{
@@ -503,13 +512,13 @@
   // 참가 신청 팀 공개 (팀명만)
   async function loadPublicTeams(){
     try{
-      const res=await fetch(`${SUPABASE_URL}/rest/v1/teams?select=team_name&order=created_at.desc`,{headers:H});
-      const teams=await res.json();
-      if(!Array.isArray(teams))return;
-      document.getElementById('teams-public-count').textContent=teams.length;
+      const res=await fetch(`${SUPABASE_URL}/rest/v1/members?select=name&order=created_at.desc`,{headers:H});
+      const members=await res.json();
+      if(!Array.isArray(members))return;
+      document.getElementById('teams-public-count').textContent=members.length;
       const box=document.getElementById('teams-public-list');
-      if(teams.length===0){box.innerHTML='<span style="color:#666;font-size:0.85rem;padding:0.5rem;">아직 신청한 팀이 없습니다. 첫 번째 팀이 되어보세요!</span>';return;}
-      box.innerHTML=teams.map(t=>`<span style="background:#1e1e1e;border:1px solid #333;color:#eee;padding:5px 14px;border-radius:50px;font-size:0.85rem;font-weight:600;">✅ ${t.team_name}</span>`).join('');
+      if(members.length===0){box.innerHTML='<span style="color:#666;font-size:0.85rem;padding:0.5rem;">아직 신청한 학생이 없습니다. 첫 번째 신청자가 되어보세요!</span>';return;}
+      box.innerHTML=members.map(m=>`<span style="background:#1e1e1e;border:1px solid #333;color:#eee;padding:5px 14px;border-radius:50px;font-size:0.85rem;font-weight:600;">✅ ${m.name}</span>`).join('');
     }catch(e){}
   }
 
@@ -530,6 +539,49 @@
   }
 
   // 중복 체크 (학년+반+번호)
+  // 운동부 명단 (시작 시 로드)
+  let athleteNames=[];
+  async function loadAthletes(){
+    try{
+      const res=await fetch(`${SUPABASE_URL}/rest/v1/athletes?select=name`,{headers:H});
+      const data=await res.json();
+      if(Array.isArray(data)) athleteNames=data.map(a=>a.name);
+    }catch(e){}
+  }
+
+  // 운동능력 선택
+  function pickAbility(val){
+    document.getElementById('m_ability').value=val;
+    document.querySelectorAll('.ability-btn').forEach(b=>b.classList.toggle('active',b.dataset.val===val));
+  }
+
+  // 운동부 여부 체크 (이름 기준) — 입력 시 자동으로 운동능력 잠금
+  function checkAthlete(){
+    const name=document.getElementById('m_name').value.trim();
+    const isAthlete=name && athleteNames.includes(name);
+    const warning=document.getElementById('athlete-warning');
+    const buttons=document.querySelectorAll('.ability-btn');
+    if(isAthlete){
+      warning.style.display='block';
+      document.getElementById('athlete-name').textContent=name;
+      // 운동부는 자동으로 '상' 선택 + 다른 옵션 잠금
+      buttons.forEach(b=>{
+        b.classList.add('locked');
+        b.disabled=(b.dataset.val!=='상');
+      });
+      pickAbility('상');
+    }else{
+      warning.style.display='none';
+      buttons.forEach(b=>{
+        b.classList.remove('locked');
+        b.disabled=false;
+      });
+    }
+  }
+  document.getElementById('m_name').addEventListener('blur',checkAthlete);
+  document.getElementById('m_name').addEventListener('input',checkAthlete);
+
+  // 중복 체크
   async function checkDuplicate(grade,cls,num){
     try{
       const res=await fetch(`${SUPABASE_URL}/rest/v1/members?grade=eq.${grade}&class=eq.${cls}&number=eq.${num}&select=id`,{headers:H});
@@ -537,26 +589,22 @@
       return Array.isArray(data)&&data.length>0;
     }catch(e){return false;}
   }
-
-  // 입력 완료 시 실시간 중복 체크
-  async function onMemberBlur(n){
-    const grade=document.getElementById(`m${n}_grade`).value;
-    const cls=document.getElementById(`m${n}_class`).value;
-    const num=document.getElementById(`m${n}_number`).value;
+  async function onMemberBlur(){
+    const grade=document.getElementById('m_grade').value;
+    const cls=document.getElementById('m_class').value;
+    const num=document.getElementById('m_number').value;
     if(!grade||!cls||!num)return;
     const dup=await checkDuplicate(parseInt(grade),parseInt(cls),parseInt(num));
-    document.getElementById(`dup-warn-${n}`).classList.toggle('show',dup);
+    document.getElementById('dup-warn').classList.toggle('show',dup);
   }
-
-  [1,2].forEach(n=>{
-    ['grade','class','number'].forEach(field=>{
-      document.getElementById(`m${n}_${field}`).addEventListener('blur',()=>onMemberBlur(n));
-    });
+  ['grade','class','number'].forEach(field=>{
+    document.getElementById('m_'+field).addEventListener('blur',onMemberBlur);
   });
 
   function validate(){
-    const req=[{id:'team_name',label:'팀명'},{id:'m1_name',label:'팀원1 이름'},{id:'m1_grade',label:'팀원1 학년'},{id:'m1_class',label:'팀원1 반'},{id:'m1_number',label:'팀원1 번호'},{id:'m1_phone',label:'팀원1 연락처'},{id:'m2_name',label:'팀원2 이름'},{id:'m2_grade',label:'팀원2 학년'},{id:'m2_class',label:'팀원2 반'},{id:'m2_number',label:'팀원2 번호'},{id:'m2_phone',label:'팀원2 연락처'}];
+    const req=[{id:'m_name',label:'이름'},{id:'m_grade',label:'학년'},{id:'m_class',label:'반'},{id:'m_number',label:'번호'},{id:'m_phone',label:'연락처'}];
     for(const f of req){const el=document.getElementById(f.id);if(!el.value.trim()){showToast('⚠️ '+f.label+'을(를) 입력해주세요','error');el.focus();return false;}}
+    if(!document.getElementById('m_ability').value){showToast('⚠️ 운동 능력을 선택해주세요','error');return false;}
     return true;
   }
 
@@ -565,31 +613,51 @@
     const btn=document.getElementById('submit-btn');
     btn.disabled=true;btn.textContent='확인 중...';
 
-    // 같은 학년 팀원 체크
-    const g1=parseInt(document.getElementById('m1_grade').value);
-    const g2=parseInt(document.getElementById('m2_grade').value);
-    if(g1===g2){
-      showToast('⚠️ 같은 학년 학생끼리는 출전할 수 없습니다','error');
-      btn.disabled=false;btn.textContent='🏃 지금 바로 참가 신청하기';return;
-    }
+    const name=document.getElementById('m_name').value.trim();
+    const grade=parseInt(document.getElementById('m_grade').value);
+    const cls=parseInt(document.getElementById('m_class').value);
+    const num=parseInt(document.getElementById('m_number').value);
+    const phone=document.getElementById('m_phone').value.trim();
+    let ability=document.getElementById('m_ability').value;
+    // 운동부면 ability를 '운동부'로 자동 변환
+    if(athleteNames.includes(name)) ability='운동부';
 
-    // 중복 체크
-    const m1_dup=await checkDuplicate(g1,parseInt(document.getElementById('m1_class').value),parseInt(document.getElementById('m1_number').value));
-    const m2_dup=await checkDuplicate(g2,parseInt(document.getElementById('m2_class').value),parseInt(document.getElementById('m2_number').value));
-    if(m1_dup){document.getElementById('dup-warn-1').classList.add('show');showToast('⚠️ 팀원1이 이미 신청된 학생입니다','error');btn.disabled=false;btn.textContent='🏃 지금 바로 참가 신청하기';return;}
-    if(m2_dup){document.getElementById('dup-warn-2').classList.add('show');showToast('⚠️ 팀원2가 이미 신청된 학생입니다','error');btn.disabled=false;btn.textContent='🏃 지금 바로 참가 신청하기';return;}
+    // 중복 체크 (최종)
+    const dup=await checkDuplicate(grade,cls,num);
+    if(dup){document.getElementById('dup-warn').classList.add('show');showToast('⚠️ 이미 신청된 학생입니다','error');btn.disabled=false;btn.textContent='🏃 지금 바로 참가 신청하기';return;}
 
     btn.textContent='신청 중...';
-    const teamName=document.getElementById('team_name').value.trim();
     try{
-      const teamRes=await fetch(`${SUPABASE_URL}/rest/v1/teams`,{method:'POST',headers:{...H,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify({team_name:teamName,extra_info:document.getElementById('extra_info').value.trim(),donation:document.getElementById('donation').value.trim()})});
-      if(!teamRes.ok)throw new Error();
-      const teamId=(await teamRes.json())[0].id;
-      const members=[1,2].map(n=>({team_id:teamId,member_order:n,name:document.getElementById(`m${n}_name`).value.trim(),grade:parseInt(document.getElementById(`m${n}_grade`).value),class:parseInt(document.getElementById(`m${n}_class`).value),number:parseInt(document.getElementById(`m${n}_number`).value),phone:document.getElementById(`m${n}_phone`).value.trim()}));
-      const memRes=await fetch(`${SUPABASE_URL}/rest/v1/members`,{method:'POST',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify(members)});
+      // 1) 신청자 정보 + 기부물품을 함께 처리 — donation 등 추가정보는 teams 테이블에 별도 row로 저장하지 않고 members의 extra_info/donation 컬럼에 함께 저장
+      // (스키마 호환을 위해 teams에 빈 row 만들지 않고 members만 단독 저장)
+      const memberData={
+        team_id:null,
+        member_order:1,
+        name:name,
+        grade:grade,
+        class:cls,
+        number:num,
+        phone:phone,
+        ability:ability
+      };
+      const memRes=await fetch(`${SUPABASE_URL}/rest/v1/members`,{method:'POST',headers:{...H,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(memberData)});
       if(!memRes.ok)throw new Error();
+
+      // 2) 기부물품/기타전달이 있으면 teams 테이블에 개인별로 따로 저장(나중에 팀 배정 후 연결)
+      // 단순화: donation/extra_info가 있을 때만 별도 teams row 생성 후 멤버에 연결
+      const donation=document.getElementById('donation').value.trim();
+      const extra=document.getElementById('extra_info').value.trim();
+      if(donation||extra){
+        const memberId=(await memRes.json())[0].id;
+        const teamRes=await fetch(`${SUPABASE_URL}/rest/v1/teams`,{method:'POST',headers:{...H,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify({team_name:`(개인)${name}`,donation:donation,extra_info:extra})});
+        if(teamRes.ok){
+          const teamId=(await teamRes.json())[0].id;
+          await fetch(`${SUPABASE_URL}/rest/v1/members?id=eq.${memberId}`,{method:'PATCH',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify({team_id:teamId})});
+        }
+      }
+
       document.getElementById('form-area').style.display='none';
-      document.getElementById('success-team-name').textContent=teamName;
+      document.getElementById('success-team-name').textContent=name+' 학생';
       document.getElementById('success-screen').classList.add('show');
       loadTeamCount();
     }catch(e){showToast('❌ 오류가 발생했습니다. 다시 시도해주세요.','error');btn.disabled=false;btn.textContent='🏃 지금 바로 참가 신청하기';}
@@ -597,6 +665,7 @@
 
   (async()=>{
     await loadSettings();
+    await loadAthletes();
     updateCountdown();
     setInterval(updateCountdown,30000);
   })();
