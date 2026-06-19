@@ -372,7 +372,7 @@
 <script>
   const SUPABASE_URL='https://ifxbdzuxyjvuvvztctpq.supabase.co';
   const SUPABASE_KEY='sb_publishable_Qaz0sO5UHxkxeoSEE9YbvA_m6PE8l-d';
-  const DEADLINE=new Date('2026-06-19T23:59:59');
+  let DEADLINE=new Date('2026-06-19T23:59:59'); // 관리자가 설정하면 갱신됨
   let EVENT_DATE=null; // 관리자가 설정하면 Date 객체로 채워짐
   const H={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY};
 
@@ -386,28 +386,50 @@
     setTimeout(()=>{t.className='toast';},3500);
   }
   function updateCountdown(){
-    const diff=DEADLINE-new Date();
+    const now=new Date();
+    const diff=DEADLINE-now;
     const dday=document.getElementById('hero-dday'),ctxt=document.getElementById('countdown-text');
     const bar1=document.getElementById('deadline-bar-1');
-    if(diff<=0){dday.textContent='마감';ctxt.textContent='신청이 마감되었습니다';document.getElementById('closed-banner').style.display='block';document.getElementById('form-area').style.display='none';bar1.classList.remove('urgent');dday.classList.remove('urgent');}
-    else{
-      const days=Math.floor(diff/86400000),hours=Math.floor((diff%86400000)/3600000),mins=Math.floor((diff%3600000)/60000);
-      dday.textContent=days>0?'D-'+days:'D-DAY';
-      ctxt.textContent=days>0?days+'일 '+hours+'시간 '+mins+'분 남음':hours+'시간 '+mins+'분 남음';
+    if(diff<=0){
+      dday.textContent='마감';
+      ctxt.textContent='신청이 마감되었습니다';
+      document.getElementById('closed-banner').style.display='block';
+      document.getElementById('form-area').style.display='none';
+      bar1.classList.remove('urgent');
+      dday.classList.remove('urgent');
+    }else{
+      // 날짜 차이: 오늘 0시 기준
+      const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+      const deadDay=new Date(DEADLINE.getFullYear(),DEADLINE.getMonth(),DEADLINE.getDate());
+      const dayDiff=Math.round((deadDay-today)/86400000);
+      const hours=Math.floor((diff%86400000)/3600000);
+      const mins=Math.floor((diff%3600000)/60000);
+      dday.textContent=dayDiff>0?'D-'+dayDiff:'D-DAY';
+      if(dayDiff>0){
+        ctxt.textContent=dayDiff+'일 '+hours+'시간 '+mins+'분 남음';
+      }else{
+        ctxt.textContent='오늘 마감! '+hours+'시간 '+mins+'분 남음';
+      }
       // 마감 임박(3일 이하) 긴급 효과
-      const urgent=diff<=3*86400000;
+      const urgent=dayDiff<=3;
       bar1.classList.toggle('urgent',urgent);
       dday.classList.toggle('urgent',urgent);
     }
     // 대회 D-day (설정된 경우만)
     if(EVENT_DATE){
-      const diff2=EVENT_DATE-new Date();
+      const diff2=EVENT_DATE-now;
       const bar2=document.getElementById('deadline-bar-2'),ctxt2=document.getElementById('countdown-text-2');
       bar2.style.display='block';
       if(diff2<=0){ctxt2.textContent='대회 당일입니다! 🏃';}
       else{
-        const d2=Math.floor(diff2/86400000),h2=Math.floor((diff2%86400000)/3600000),m2=Math.floor((diff2%3600000)/60000);
-        ctxt2.textContent=(d2>0?'D-'+d2:'D-DAY')+' ('+(d2>0?d2+'일 '+h2+'시간 '+m2+'분 남음':h2+'시간 '+m2+'분 남음')+')';
+        const today2=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+        const eventDay=new Date(EVENT_DATE.getFullYear(),EVENT_DATE.getMonth(),EVENT_DATE.getDate());
+        const dayDiff2=Math.round((eventDay-today2)/86400000);
+        const h2=Math.floor((diff2%86400000)/3600000);
+        const m2=Math.floor((diff2%3600000)/60000);
+        const ddLabel=dayDiff2>0?'D-'+dayDiff2:'D-DAY';
+        const timeLabel=dayDiff2>0?(dayDiff2+'일 '+h2+'시간 '+m2+'분 남음'):('오늘! '+h2+'시간 '+m2+'분 남음');
+        ctxt2.textContent=ddLabel+' ('+timeLabel+')';
       }
     }
   }
@@ -484,6 +506,12 @@
       if(settings['event_date_iso']){
         const d=new Date(settings['event_date_iso']);
         if(!isNaN(d.getTime())) EVENT_DATE=d;
+      }
+
+      // 신청 마감 날짜 (D-day용)
+      if(settings['deadline_date_iso']){
+        const d=new Date(settings['deadline_date_iso']+'T23:59:59');
+        if(!isNaN(d.getTime())) DEADLINE=d;
       }
 
       // 공지 배너
