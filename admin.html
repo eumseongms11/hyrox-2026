@@ -422,6 +422,15 @@
             <p style="font-size:0.75rem;color:var(--gray-text);margin-top:0.3rem;" id="setting-strip-deadline-status"></p>
           </div>
           <div class="field">
+            <label style="font-size:0.82rem;font-weight:600;color:#444;display:block;margin-bottom:0.35rem;">⏰ 신청 마감 날짜 (D-day 카운트다운용)</label>
+            <div style="display:flex;gap:8px;">
+              <input type="date" id="setting-deadline-date-iso" style="flex:1;padding:0.65rem 0.85rem;border:1px solid var(--gray-mid);border-radius:var(--radius-sm);font-size:0.95rem;font-family:inherit;outline:none;background:#fafafa;">
+              <button class="btn primary" onclick="saveDeadlineDate()">저장</button>
+            </div>
+            <p style="font-size:0.75rem;color:var(--gray-text);margin-top:0.3rem;">메인페이지의 D-day와 남은 시간이 이 날짜를 기준으로 표시됩니다.</p>
+            <p style="font-size:0.75rem;color:var(--gray-text);margin-top:0.3rem;" id="setting-deadline-date-iso-status"></p>
+          </div>
+          <div class="field">
             <label style="font-size:0.82rem;font-weight:600;color:#444;display:block;margin-bottom:0.35rem;">대회 일정 표시 문구</label>
             <div style="display:flex;gap:8px;">
               <input type="text" id="setting-strip-event-date" placeholder="예: 기말고사 후 공지 / 2026년 7월 10일(금)" style="flex:1;padding:0.65rem 0.85rem;border:1px solid var(--gray-mid);border-radius:var(--radius-sm);font-size:0.95rem;font-family:inherit;outline:none;background:#fafafa;">
@@ -854,6 +863,10 @@ async function loadSettings(){
     if(currentSettings['event_date_iso']){
       document.getElementById('setting-event-date-iso').value=currentSettings['event_date_iso'];
     }
+    // 신청 마감 날짜
+    if(currentSettings['deadline_date_iso']){
+      document.getElementById('setting-deadline-date-iso').value=currentSettings['deadline_date_iso'];
+    }
     // 헤드라인 타이틀/서브 → 줄별 입력칸으로 역변환
     parseLinesToInputs(currentSettings['hero_title'],'title','em');
     parseLinesToInputs(currentSettings['hero_sub'],'sub','strong');
@@ -958,6 +971,20 @@ async function saveEventDate(){
   try{
     await upsertSetting('event_date_iso',val);
     statusEl.textContent=val?'✅ 저장됨 — 메인 페이지에 대회 D-day가 표시됩니다':'✅ 초기화됨';
+    statusEl.style.color='#16a34a';
+    setTimeout(()=>statusEl.textContent='',3000);
+  }catch(e){
+    statusEl.textContent='❌ 저장 실패. 다시 시도해주세요.';
+    statusEl.style.color='#b91c1c';
+  }
+}
+
+async function saveDeadlineDate(){
+  const statusEl=document.getElementById('setting-deadline-date-iso-status');
+  const val=document.getElementById('setting-deadline-date-iso').value;
+  try{
+    await upsertSetting('deadline_date_iso',val);
+    statusEl.textContent=val?'✅ 저장됨 — 메인 페이지의 D-day가 갱신됩니다':'✅ 초기화됨';
     statusEl.style.color='#16a34a';
     setTimeout(()=>statusEl.textContent='',3000);
   }catch(e){
